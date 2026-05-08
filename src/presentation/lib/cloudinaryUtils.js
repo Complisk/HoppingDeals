@@ -12,7 +12,8 @@ export const uploadImageToCloudinary = async (file) => {
     `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
     { method: "POST", body: formData },
   );
-  if (!response.ok) throw new Error(`Upload failed with status ${response.status}`);
+  if (!response.ok)
+    throw new Error(`Upload failed with status ${response.status}`);
   const data = await response.json();
   return data.secure_url;
 };

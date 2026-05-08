@@ -19,8 +19,11 @@ import fetchData from "@/presentation/lib/apiAction";
  * const result = await loginUser(email, password);
  */
 export const useApi = () => {
-    const call = useCallback(async (endpoint, options = {}, callback = null, notProtected = false) => {
-        return await fetchData(endpoint, options, callback, notProtected);
-    }, []);
-    return { call };
+  const call = useCallback(
+    async (endpoint, options = {}, callback = null, notProtected = false) => {
+      return await fetchData(endpoint, options, callback, notProtected);
+    },
+    [],
+  );
+  return { call };
 };

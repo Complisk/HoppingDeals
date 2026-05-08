@@ -3,87 +3,101 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Badge } from "@/presentation/components/ui/badge";
-import { Eye, Users, Megaphone, TrendingUp, BarChart3, DollarSign, } from "lucide-react";
+import {
+  Eye,
+  Users,
+  Megaphone,
+  TrendingUp,
+  BarChart3,
+  DollarSign,
+} from "lucide-react";
 import { useAdminService } from "@/presentation/services/adminService";
 const AdminDashboard = () => {
-    const dispatch = useDispatch();
-    const { getDashboardStats } = useAdminService();
-    const [dashboardData, setDashboardData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    useEffect(() => {
-        const fetchDashboard = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const data = await getDashboardStats(dispatch);
-                if (data) {
-                    setDashboardData(data);
-                }
-            }
-            catch (err) {
-                console.error("Error fetching dashboard:", err);
-                setError(err?.message || "Failed to load dashboard");
-            }
-            finally {
-                setLoading(false);
-            }
-        };
-        fetchDashboard();
-    }, []);
-    if (loading) {
-        return (<div className="space-y-8">
+  const dispatch = useDispatch();
+  const { getDashboardStats } = useAdminService();
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await getDashboardStats(dispatch);
+        if (data) {
+          setDashboardData(data);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard:", err);
+        setError(err?.message || "Failed to load dashboard");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDashboard();
+  }, []);
+  if (loading) {
+    return (
+      <div className="space-y-8">
         <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
         <div className="flex items-center justify-center h-64">
           <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
-      </div>);
-    }
-    if (error) {
-        return (<div className="space-y-8">
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="space-y-8">
         <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
         <div className="bg-destructive/10 border border-destructive rounded-lg p-4">
           <p className="text-destructive">{error}</p>
         </div>
-      </div>);
-    }
-    const stats = [
-        {
-            label: "Total Users",
-            value: dashboardData?.users?.total || 0,
-            icon: Users,
-            color: "text-primary",
-            subText: `${dashboardData?.users?.active || 0} active`,
-        },
-        {
-            label: "Total Businesses",
-            value: dashboardData?.businesses?.total || 0,
-            icon: TrendingUp,
-            color: "text-accent",
-            subText: `${dashboardData?.businesses?.active || 0} active`,
-        },
-        {
-            label: "Total Promotions",
-            value: dashboardData?.promotions?.total || 0,
-            icon: Megaphone,
-            color: "text-success",
-            subText: `${dashboardData?.promotions?.active || 0} active`,
-        },
-        {
-            label: "Total Revenue",
-            value: `$${dashboardData?.revenue?.total || "0.00"}`,
-            icon: DollarSign,
-            color: "text-info",
-            subText: "From active promotions",
-        },
-    ];
-    return (<div className="space-y-8">
+      </div>
+    );
+  }
+  const stats = [
+    {
+      label: "Total Users",
+      value: dashboardData?.users?.total || 0,
+      icon: Users,
+      color: "text-primary",
+      subText: `${dashboardData?.users?.active || 0} active`,
+    },
+    {
+      label: "Total Businesses",
+      value: dashboardData?.businesses?.total || 0,
+      icon: TrendingUp,
+      color: "text-accent",
+      subText: `${dashboardData?.businesses?.active || 0} active`,
+    },
+    {
+      label: "Total Promotions",
+      value: dashboardData?.promotions?.total || 0,
+      icon: Megaphone,
+      color: "text-success",
+      subText: `${dashboardData?.promotions?.active || 0} active`,
+    },
+    {
+      label: "Total Revenue",
+      value: `$${dashboardData?.revenue?.total || "0.00"}`,
+      icon: DollarSign,
+      color: "text-info",
+      subText: "From active promotions",
+    },
+  ];
+  return (
+    <div className="space-y-8">
       <h1 className="text-3xl font-bold text-foreground">Admin Dashboard</h1>
 
       {/* Main Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {stats.map((stat) => (<div key={stat.label} className="bg-card rounded-2xl p-6 border border-border">
-            <stat.icon className={`h-8 w-8 ${stat.color} mb-3`}/>
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-card rounded-2xl p-6 border border-border"
+          >
+            <stat.icon className={`h-8 w-8 ${stat.color} mb-3`} />
             <div className="text-3xl font-bold text-foreground">
               {stat.value}
             </div>
@@ -91,7 +105,8 @@ const AdminDashboard = () => {
             <div className="text-xs text-muted-foreground mt-1">
               {stat.subText}
             </div>
-          </div>))}
+          </div>
+        ))}
       </div>
 
       {/* User Breakdown */}
@@ -159,21 +174,21 @@ const AdminDashboard = () => {
       {/* Engagement Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <BarChart3 className="h-8 w-8 text-blue-600 mb-3"/>
+          <BarChart3 className="h-8 w-8 text-blue-600 mb-3" />
           <div className="text-sm text-muted-foreground mb-2">Total Views</div>
           <div className="text-3xl font-bold text-foreground">
             {(dashboardData?.engagement?.totalViews || 0).toLocaleString()}
           </div>
         </div>
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <Eye className="h-8 w-8 text-green-600 mb-3"/>
+          <Eye className="h-8 w-8 text-green-600 mb-3" />
           <div className="text-sm text-muted-foreground mb-2">Total Clicks</div>
           <div className="text-3xl font-bold text-foreground">
             {(dashboardData?.engagement?.totalClicks || 0).toLocaleString()}
           </div>
         </div>
         <div className="bg-card rounded-2xl p-6 border border-border">
-          <TrendingUp className="h-8 w-8 text-purple-600 mb-3"/>
+          <TrendingUp className="h-8 w-8 text-purple-600 mb-3" />
           <div className="text-sm text-muted-foreground mb-2">
             Click-Through Rate
           </div>
@@ -185,7 +200,8 @@ const AdminDashboard = () => {
 
       {/* Recent Users */}
       {dashboardData?.recentActivity?.users &&
-            dashboardData?.recentActivity?.users?.length > 0 && (<div className="bg-card rounded-2xl border border-border overflow-hidden">
+        dashboardData?.recentActivity?.users?.length > 0 && (
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Recent Users</h2>
             </div>
@@ -201,8 +217,9 @@ const AdminDashboard = () => {
               </thead>
               <tbody className="divide-y divide-border">
                 {dashboardData?.recentActivity?.users
-                ?.slice(0, 5)
-                .map((user) => (<tr key={user.id} className="hover:bg-secondary/50">
+                  ?.slice(0, 5)
+                  .map((user) => (
+                    <tr key={user.id} className="hover:bg-secondary/50">
                       <td className="p-4 font-medium">{user.fullName}</td>
                       <td className="p-4 text-muted-foreground">
                         {user.email}
@@ -211,21 +228,28 @@ const AdminDashboard = () => {
                         <Badge variant="secondary">{user.role}</Badge>
                       </td>
                       <td className="p-4">
-                        <Badge variant={user.status === "active" ? "default" : "destructive"}>
+                        <Badge
+                          variant={
+                            user.status === "active" ? "default" : "destructive"
+                          }
+                        >
                           {user.status}
                         </Badge>
                       </td>
                       <td className="p-4 text-muted-foreground">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </td>
-                    </tr>))}
+                    </tr>
+                  ))}
               </tbody>
             </table>
-          </div>)}
+          </div>
+        )}
 
       {/* Recent Promotions */}
       {dashboardData?.recentActivity?.promotions &&
-            dashboardData?.recentActivity?.promotions?.length > 0 && (<div className="bg-card rounded-2xl border border-border overflow-hidden">
+        dashboardData?.recentActivity?.promotions?.length > 0 && (
+          <div className="bg-card rounded-2xl border border-border overflow-hidden">
             <div className="p-4 border-b border-border">
               <h2 className="font-semibold">Recent Promotions</h2>
             </div>
@@ -242,18 +266,23 @@ const AdminDashboard = () => {
               </thead>
               <tbody className="divide-y divide-border">
                 {dashboardData?.recentActivity?.promotions
-                ?.slice(0, 5)
-                .map((promo) => (<tr key={promo.id} className="hover:bg-secondary/50">
+                  ?.slice(0, 5)
+                  .map((promo) => (
+                    <tr key={promo.id} className="hover:bg-secondary/50">
                       <td className="p-4 font-medium">
                         {promo.business?.name}
                       </td>
                       <td className="p-4">${promo.price}</td>
                       <td className="p-4">
-                        <Badge variant={promo.status === "active"
-                    ? "default"
-                    : promo.status === "pending"
-                        ? "secondary"
-                        : "outline"}>
+                        <Badge
+                          variant={
+                            promo.status === "active"
+                              ? "default"
+                              : promo.status === "pending"
+                                ? "secondary"
+                                : "outline"
+                          }
+                        >
                           {promo.status}
                         </Badge>
                       </td>
@@ -266,10 +295,13 @@ const AdminDashboard = () => {
                       <td className="p-4 text-muted-foreground">
                         {new Date(promo.createdAt).toLocaleDateString()}
                       </td>
-                    </tr>))}
+                    </tr>
+                  ))}
               </tbody>
             </table>
-          </div>)}
-    </div>);
+          </div>
+        )}
+    </div>
+  );
 };
 export default AdminDashboard;

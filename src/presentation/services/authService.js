@@ -1,6 +1,5 @@
 "use client";
 
-import type, { AppDispatch } from "@/presentation/store";
 // Centralized auth service. JWT lives in an httpOnly cookie now, so we don't
 // shuffle tokens through localStorage anymore — the cookie rides on every
 // /api request automatically (see lib/apiAction.js).
@@ -22,7 +21,10 @@ export const useAuthService = () => {
 
   const registerUser = async (dispatch, data) => {
     dispatch(setUserLoading());
-    const { response, error } = await call("/auth/register", { method: "POST", data });
+    const { response, error } = await call("/auth/register", {
+      method: "POST",
+      data,
+    });
     if (error) {
       const msg = error.message || "Registration failed. Please try again.";
       dispatch(setUserError(msg));
@@ -79,7 +81,9 @@ export const useAuthService = () => {
       throw new Error(msg);
     }
     if (response?.token) {
-      dispatch(setBusinessSuccess({ business: response, token: response.token }));
+      dispatch(
+        setBusinessSuccess({ business: response, token: response.token }),
+      );
       toast.success("Business registration successful!");
       return { business: response, token: response.token };
     }
@@ -98,7 +102,9 @@ export const useAuthService = () => {
       throw new Error(msg);
     }
     if (response?.token) {
-      dispatch(setBusinessSuccess({ business: response, token: response.token }));
+      dispatch(
+        setBusinessSuccess({ business: response, token: response.token }),
+      );
       toast.success("Welcome back!");
       return { business: response, token: response.token };
     }
@@ -117,7 +123,8 @@ export const useAuthService = () => {
       throw new Error(msg);
     }
     const isAdmin =
-      response?.token && (response.isSuperAdmin === true || response.role?.name);
+      response?.token &&
+      (response.isSuperAdmin === true || response.role?.name);
     if (!isAdmin) {
       const msg = "You do not have admin access";
       dispatch(setUserError(msg));

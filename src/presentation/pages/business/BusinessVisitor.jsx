@@ -1,221 +1,323 @@
 "use client";
-import type, { RootState } from "@/presentation/store/index";
-import { locations } from "@/data/mockData";
-import Select from "react-select";
+
+// /business/visitor — public marketing page mirroring the live complisk.com
+// layout. Three pricing cards (Starter/Professional/Enterprise), a Statewide
+// upgrade banner with tooltip, three feature cards, a CTA, and the embedded
+// CreatePromotion preview that lets visitors try the promotion builder
+// without an account (isVisitor=true).
+
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, MapPin, Clock, Building2, Users, Briefcase, BarChart3, QrCode, } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CircleHelp,
+  LayoutGrid,
+  Pencil,
+  Calendar,
+  Building2,
+} from "lucide-react";
 import { Button } from "@/presentation/components/ui/button";
-import Footer from "@/presentation/components/homePage/Footer";
-import { useSelector } from "react-redux";
-import { ShoppingCart, } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/presentation/components/ui/tooltip";
+import { cn } from "@/presentation/lib/utils";
 import BusinessHeader from "@/presentation/components/shared/BusinessHeader";
+import Footer from "@/presentation/components/homePage/Footer";
 import CreatePromotion from "./CreatePromotion";
-const businessTypes = [
-    {
-        id: "small",
-        name: "Small Business",
-        icon: Users,
-        description: "Local shops, boutiques, solo entrepreneurs, and startups",
-        examples: ["Nail Salons", "Coffee Shops", "Boutique Stores", "Food Trucks"],
-        color: "from-emerald-500 to-teal-500",
-    },
-    {
-        id: "medium",
-        name: "Medium Size Business",
-        icon: Building2,
-        description: "Growing businesses with multiple locations or larger operations",
-        examples: [
-            "Restaurant Chains",
-            "Auto Dealerships",
-            "Regional Retailers",
-            "Hotel Groups",
-        ],
-        color: "from-blue-500 to-indigo-500",
-    },
-    {
-        id: "large",
-        name: "Large Corporation",
-        icon: Briefcase,
-        description: "Enterprises with nationwide presence and extensive operations",
-        examples: [
-            "National Chains",
-            "Franchises",
-            "Major Brands",
-            "Corporate Groups",
-        ],
-        color: "from-purple-500 to-pink-500",
-    },
-    {
-        id: "online-ecommerce",
-        name: "Online Ecommerce Store",
-        icon: ShoppingCart,
-        description: "Online stores, digital marketplaces, and dropshipping",
-        examples: [
-            "Online Stores",
-            "Marketplaces",
-            "Dropshipping",
-            "Digital Products",
-        ],
-        color: "from-orange-500 to-red-500",
-    },
+
+const PLANS = [
+  {
+    id: "starter",
+    name: "Starter",
+    campaign: "Campaign",
+    price: "100",
+    color: "bg-primary",
+    borderColor: "border-primary/40",
+    buttonColor:
+      "bg-primary hover:bg-primary/90 text-primary-foreground",
+    features: [
+      "1 active promotion (30-day campaign — modify anytime during the run)",
+      "Target 1 city",
+      "Track QR Code Scans",
+      "Realtime Analytics Dashboard",
+      "Schedule Start Date in Advance",
+    ],
+  },
+  {
+    id: "professional",
+    name: "Professional",
+    campaign: "Campaign",
+    price: "250",
+    color: "bg-primary",
+    borderColor: "border-primary/80",
+    buttonColor:
+      "bg-primary hover:bg-primary/90 text-primary-foreground",
+    features: [
+      "1 active promotion (30-day campaign — modify anytime during the run)",
+      "Target 3 cities",
+      "Track QR Code Scans",
+      "Realtime Analytics Dashboard",
+      "Schedule Start Date in Advance",
+    ],
+    highlight: true,
+  },
+  {
+    id: "enterprise",
+    name: "Enterprise",
+    campaign: "Campaign",
+    price: "500",
+    color: "bg-primary",
+    borderColor: "border-primary/40",
+    buttonColor:
+      "bg-primary hover:bg-primary/90 text-primary-foreground",
+    features: [
+      "1 active promotion (30-day campaign — modify anytime during the run)",
+      "Target 8 cities",
+      "Track QR Code Scans",
+      "Realtime Analytics Dashboard",
+      "Schedule Start Date in Advance",
+    ],
+  },
 ];
-const benefits = [
-    {
-        icon: BarChart3,
-        title: "Real-time Analytics",
-        description: "Track views, scans, and engagement",
-    },
-    {
-        icon: QrCode,
-        title: "Unique QR Codes",
-        description: "Each promotion gets a scannable QR code",
-    },
-    {
-        icon: Clock,
-        title: "Time-based Targeting",
-        description: "Run promotions at the perfect time",
-    },
-    {
-        icon: MapPin,
-        title: "Location Control",
-        description: "Target specific cities and regions",
-    },
+
+const FEATURES = [
+  {
+    icon: Pencil,
+    title: "Design Promotions",
+    description:
+      "Create eye-catching campaigns in minutes using simple, ready-made templates.",
+  },
+  {
+    icon: LayoutGrid,
+    title: "Track Results",
+    description:
+      "Monitor QR code scans and see realtime analytics on your dashboard.",
+  },
+  {
+    icon: Calendar,
+    title: "Schedule Campaigns",
+    description:
+      "Plan ahead by creating campaigns that launch on your chosen start date.",
+  },
 ];
-const BusinessVisitor = () => {
-    const isBusinessLoggedIn = useSelector((state) => state.auth.businessToken !== null);
-    return (<div className="min-h-screen bg-background">
+
+const STATEWIDE_TOOLTIP =
+  "This is an additional charge on top of the 30 days Plan. Anytime a State(s) is added, Statewide promotion starts and end after 30 days. Great for e-commerce that needs a broader audience reached.";
+
+export default function BusinessVisitor() {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
       <BusinessHeader />
 
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5"/>
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-3xl mx-auto">
-            <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              Grow Your Business with{" "}
+      <main className="container mx-auto px-4 py-16">
+        {/* Hero */}
+        <section className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 leading-tight">
+              Grow Your Business with
+              <br />
               <span className="text-primary">Local Promotions</span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8">
-              Create stunning promotions, target local customers, and watch your
-              business grow. No design skills needed — launch in minutes.
+            <p className="text-lg md:text-xl text-black font-bold max-w-2xl mx-auto leading-relaxed">
+              Create stunning 30-day promotions (one-time charge, no recurring
+              fees), target local customers, and track real results - no design
+              skills needed. Unlike other platforms, we do not require bidding
+              for ad space or charge high fees during peak times.
             </p>
-            <div className="flex gap-4 justify-center">
-              <Button variant="hero" size="xl" asChild>
-                <Link href={isBusinessLoggedIn
-            ? "/business/dashboard"
-            : "/business/register"}>
-                  {isBusinessLoggedIn ? "Go to Dashboard" : "Start Now"}
-                  <ArrowRight className="ml-2 h-5 w-5"/>
-                </Link>
-              </Button>
-              <Button variant="outline" size="xl" asChild>
-                <a href="#templates">View Templates</a>
-              </Button>
-            </div>
           </motion.div>
-        </div>
-      </section>
+        </section>
 
-      {/* Business Types Section */}
-      <section className="py-16 bg-secondary/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground mb-4">
-              Choose Your Business Type
-            </h2>
-            <p className="text-muted-foreground max-w-xl mx-auto">
-              Select the category that best describes your business
-            </p>
-          </div>
+        {/* Pricing cards */}
+        <div className="flex flex-col md:flex-row items-end justify-center gap-6 lg:gap-8 max-w-7xl mx-auto mb-16 px-4">
+          {PLANS.map((plan) => (
+            <div
+              key={plan.id}
+              className={cn(
+                "relative flex flex-col w-full max-w-sm rounded-xl overflow-hidden border-2 bg-[#000000] text-white shadow-2xl transition-all duration-300",
+                plan.name === "Professional" && "pt-6",
+                plan.borderColor,
+                plan.highlight
+                  ? "scale-105 z-10 md:-translate-y-2 border-[#7C3AED]"
+                  : "scale-100 opacity-95 hover:opacity-100",
+              )}
+            >
+              <div
+                className={cn(
+                  "py-6 text-center font-bold uppercase",
+                  plan.color,
+                )}
+              >
+                <div className="text-2xl text-white leading-tight">
+                  {plan.name}
+                </div>
+                <div className="text-1xl leading-tight">{plan.campaign}</div>
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {businessTypes.map((type, index) => (<motion.div key={type.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="relative bg-card rounded-2xl border border-border overflow-hidden group hover:border-primary/50 transition-all">
-                <div className={`h-2 bg-gradient-to-r ${type.color}`}/>
-                <div className="p-6">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center shadow-lg`}>
-                      <type.icon className="h-7 w-7 text-white"/>
-                    </div>
-                    <h3 className="text-xl font-bold text-foreground">
-                      {type.name}
-                    </h3>
+              <div className="p-8 flex-grow flex flex-col items-center">
+                <div className="text-center mb-8">
+                  <div className="text-6xl font-black mb-1">${plan.price}</div>
+                  <div className="text-gray-400 font-medium lowercase">
+                    /campaign
                   </div>
-
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {type.description}
-                  </p>
-
-                  <div className="space-y-2 mb-6">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase">
-                      Examples:
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {type.examples.map((example, i) => (<span key={i} className="px-2 py-1 bg-secondary rounded-full text-xs text-muted-foreground">
-                          {example}
-                        </span>))}
-                    </div>
+                  <div className="mt-4 text-[10px] text-[#FACC15] font-bold uppercase tracking-[0.2em]">
+                    Flat Fee. No Subscriptions
                   </div>
+                </div>
 
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link href={`/business/register?businessType=${type.id}`}>
-                      Register as {type.name.split(" ")[0]}
-                    </Link>
+                <div className="w-full h-px bg-white/10 mb-8" />
+
+                <ul className="space-y-6 mb-10 w-full px-2">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-start gap-4">
+                      <Check className="h-5 w-5 mt-0.5 shrink-0 text-[#FACC15]" />
+                      <span className="text-sm font-medium leading-relaxed text-gray-300">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="w-full mt-auto space-y-6">
+                  <div className="text-center text-3xl font-black">
+                    ${plan.price}
+                  </div>
+                  <Button
+                    asChild
+                    className={cn(
+                      "w-full py-7 text-xl font-black rounded-lg transition-all transform active:scale-95",
+                      plan.buttonColor,
+                    )}
+                  >
+                    <Link href="/business/register">Get Started</Link>
                   </Button>
                 </div>
-              </motion.div>))}
-          </div>
-        </div>
-      </section>
+              </div>
 
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {benefits.map((benefit, index) => (<motion.div key={index} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1 }} className="bg-card rounded-2xl p-6 border border-border text-center">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <benefit.icon className="h-6 w-6 text-primary"/>
-                </div>
-                <h3 className="font-bold text-foreground mb-2">
-                  {benefit.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {benefit.description}
-                </p>
-              </motion.div>))}
-          </div>
+              {plan.highlight && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-400 via-purple-400 to-orange-400 blur-sm opacity-80" />
+              )}
+            </div>
+          ))}
         </div>
-      </section>
-      <div className="px-16">
-        <CreatePromotion isVisitor={true}/>
-      </div>
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="bg-gradient-to-br from-primary to-accent rounded-3xl p-12 text-center">
-            <h2 className="text-3xl font-bold text-primary-foreground mb-4">
-              Ready to Grow Your Business?
-            </h2>
-            <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
-              Join thousands of businesses already using Complisk to reach local
-              customers
-            </p>
-            <div className="flex gap-4 justify-center flex-wrap">
-              <Button variant="secondary" size="xl" asChild>
-                <Link href="/business/register">
-                  Register Your Business
-                  <ArrowRight className="ml-2 h-5 w-5"/>
-                </Link>
-              </Button>
-              <Button variant="outline" size="xl" className="bg-transparent border-white/30 text-white hover:bg-white/10" asChild>
-                <Link href="/business/login">
-                  Already have an account? Sign In
-                </Link>
-              </Button>
+
+        {/* Statewide upgrade banner */}
+        <div className="text-center mb-24">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="mx-auto flex max-w-xl items-center justify-center gap-2 px-2 text-center font-black text-primary tracking-wide leading-snug text-sm sm:text-xl md:text-2xl"
+          >
+            <span className="text-nowrap">Statewide Upgrade Available:</span>
+            <span className="inline-flex whitespace-nowrap rounded-lg border border-[#FACC15]/30 bg-black px-1 py-1 text-[10px] text-white sm:px-4 sm:text-base md:text-lg">
+              $500 per state
+            </span>
+            <TooltipProvider delayDuration={0} skipDelayDuration={0}>
+              <Tooltip
+                open={tooltipOpen}
+                onOpenChange={(open) => !open && setTooltipOpen(false)}
+              >
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Statewide upgrade details"
+                    onClick={(event) => {
+                      event.preventDefault();
+                      setTooltipOpen((value) => !value);
+                    }}
+                    className="text-primary"
+                  >
+                    <CircleHelp className="h-5 w-5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="top"
+                  sideOffset={10}
+                  className="w-[calc(100vw-2rem)] max-w-sm text-left text-xs sm:text-base font-normal leading-relaxed bg-black/90 text-white border-white/20 backdrop-blur-[1px]"
+                  onEscapeKeyDown={() => setTooltipOpen(false)}
+                >
+                  {STATEWIDE_TOOLTIP}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </motion.div>
+        </div>
+
+        {/* Feature row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 max-w-6xl mx-auto px-4">
+          {FEATURES.map((feature) => (
+            <motion.div
+              key={feature.title}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="flex items-start gap-5 group"
+            >
+              <div className="p-3 rounded-2xl border border-primary/20 text-primary group-hover:scale-110 transition-transform shadow-lg shrink-0">
+                <feature.icon className="h-8 w-8" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl text-primary font-bold">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-black leading-relaxed">
+                  {feature.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </main>
+
+      {/* CTA card */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="bg-gradient-to-r mx-5 from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
+      >
+        <div className="text-center space-y-6">
+          <div className="flex justify-center mb-4">
+            <div className="p-3 rounded-full bg-primary/10 border border-primary/20">
+              <Building2 className="h-8 w-8 text-primary" />
             </div>
           </div>
+          <div className="space-y-3">
+            <h2 className="text-2xl font-bold text-foreground">
+              ready to run a promotion yet?
+            </h2>
+            <p className="text-muted-foreground leading-relaxed max-w-md mx-auto">
+              Sign up for free and claim your business page! We encourage you
+              to hone your skills by creating some stunning banner templates.
+              Once you&rsquo;re ready, subscribe to a Plan and Run it!
+            </p>
+          </div>
+          <Link href="/business/register">
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+              Claim your Business Page
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </Link>
         </div>
-      </section>
+      </motion.div>
+
+      {/* Embedded promotion preview for visitors */}
+      <div className="px-4 mt-20">
+        <CreatePromotion isVisitor={true} />
+      </div>
 
       <Footer />
-    </div>);
-};
-export default BusinessVisitor;
+    </div>
+  );
+}

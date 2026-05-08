@@ -1,18 +1,32 @@
 "use client";
+
 import Link from "next/link";
-const Logo = ({ variant = "default", size = "md", showText = true, }) => {
-    const sizeClasses = {
-        sm: "h-6 w-6",
-        md: "h-8 w-8",
-        lg: "h-10 w-10",
-    };
-    const textSizes = {
-        sm: "text-lg",
-        md: "text-xl",
-        lg: "text-2xl",
-    };
-    return (<Link href="/">
-      <img src="/5aae838731ab6f23ea08b4698b32f72f92bbf1d1 (1).png" className=" w-24 " alt=""/>
-    </Link>);
+import Image from "next/image";
+
+const sizeMap = {
+  sm: { className: "h-6 w-auto", width: 122, height: 60 },
+  md: { className: "h-8 w-auto", width: 162, height: 80 },
+  lg: { className: "h-10 w-auto", width: 203, height: 100 },
 };
+
+const Logo = ({ size = "md", className = "" }) => {
+  const { className: sizeClass, width, height } = sizeMap[size] ?? sizeMap.md;
+  return (
+    <Link
+      href="/"
+      className="inline-flex items-center"
+      aria-label="Complisk home"
+    >
+      <Image
+        src="/complisk-logo.png"
+        alt="Complisk"
+        width={width}
+        height={height}
+        priority
+        className={`${sizeClass} ${className}`.trim()}
+      />
+    </Link>
+  );
+};
+
 export default Logo;

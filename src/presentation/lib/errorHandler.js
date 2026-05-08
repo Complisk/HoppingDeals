@@ -2,7 +2,8 @@ export const extractErrorMessage = (error) => {
   if (typeof error === "string") return error;
   if (error?.message && typeof error.message === "string") return error.message;
   if (error?.error && typeof error.error === "string") return error.error;
-  if (error?.data?.message && typeof error.data.message === "string") return error.data.message;
+  if (error?.data?.message && typeof error.data.message === "string")
+    return error.data.message;
   return "An error occurred. Please try again.";
 };
 

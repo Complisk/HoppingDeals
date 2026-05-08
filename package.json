@@ -7,6 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "format": "prettier --write \"src/**/*.{js,jsx,json,css,md}\" \"middleware.js\" \"next.config.mjs\"",
+    "format:check": "prettier --check \"src/**/*.{js,jsx,json,css,md}\" \"middleware.js\" \"next.config.mjs\"",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:pull": "prisma db pull",
@@ -95,6 +97,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "prettier": "^3.8.3",
     "prisma": "^7.8.0",
     "tailwindcss": "^4"
   }

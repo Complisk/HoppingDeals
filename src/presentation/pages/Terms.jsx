@@ -5,11 +5,16 @@ import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 import { motion } from "framer-motion";
 const Terms = () => {
-    return (<div className="min-h-screen flex flex-col bg-background">
+  return (
+    <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1">
         <div className="max-w-4xl mx-auto px-4 py-12 md:py-20">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
             <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4 text-center">
               Terms of Use
             </h1>
@@ -255,6 +260,7 @@ const Terms = () => {
         </div>
       </main>
       <Footer />
-    </div>);
+    </div>
+  );
 };
 export default Terms;

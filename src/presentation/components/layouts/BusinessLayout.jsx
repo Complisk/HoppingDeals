@@ -39,7 +39,10 @@ export default function BusinessLayout({ children }) {
       await serverLogout();
     } catch {}
     dispatch(logout());
-    toast({ title: "Logged out", description: "You have been successfully logged out." });
+    toast({
+      title: "Logged out",
+      description: "You have been successfully logged out.",
+    });
   };
 
   return (
@@ -72,7 +75,8 @@ export default function BusinessLayout({ children }) {
 
         <nav className="flex-1 px-4 space-y-1 overflow-y-auto">
           {sidebarLinks.map((link) => {
-            const active = pathname === link.to || pathname?.startsWith(`${link.to}/`);
+            const active =
+              pathname === link.to || pathname?.startsWith(`${link.to}/`);
             return (
               <Link
                 key={link.to}

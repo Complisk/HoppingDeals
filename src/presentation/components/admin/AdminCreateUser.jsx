@@ -1,10 +1,31 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/presentation/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/presentation/components/ui/select";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/presentation/components/ui/form";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/presentation/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/presentation/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/presentation/components/ui/form";
 import { Checkbox } from "@/presentation/components/ui/checkbox";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,54 +34,58 @@ import { useRoleService } from "@/presentation/services/roleService";
 import { useToast } from "@/presentation/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 const formSchema = z.object({
-    fullName: z.string().min(2, "Full name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    roleId: z.string().optional(),
-    isSuperAdmin: z.boolean().default(false),
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  roleId: z.string().optional(),
+  isSuperAdmin: z.boolean().default(false),
 });
-export const AdminCreateUser = ({ open, onOpenChange, onSuccess, }) => {
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            fullName: "",
-            email: "",
-            password: "",
-            roleId: "",
-            isSuperAdmin: false,
-        },
-    });
-    const { createAdminUser, getRoles } = useRoleService();
-    const { toast } = useToast();
-    const [roles, setRoles] = useState([]);
-    const [loadingRoles, setLoadingRoles] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
-    useEffect(() => {
-        if (open)
-            loadRoles();
-    }, [open]);
-    const loadRoles = async () => {
-        setLoadingRoles(true);
-        const rolesData = await getRoles();
-        if (rolesData)
-            setRoles(rolesData);
-        setLoadingRoles(false);
-    };
-    const onSubmit = async (values) => {
-        try {
-            setSubmitting(true);
-            const result = await createAdminUser(values.fullName, values.email, values.password, values.roleId || undefined, values.isSuperAdmin);
-            if (result) {
-                form.reset();
-                onOpenChange(false);
-                onSuccess?.();
-            }
-        }
-        finally {
-            setSubmitting(false);
-        }
-    };
-    return (<Dialog open={open} onOpenChange={onOpenChange}>
+export const AdminCreateUser = ({ open, onOpenChange, onSuccess }) => {
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      roleId: "",
+      isSuperAdmin: false,
+    },
+  });
+  const { createAdminUser, getRoles } = useRoleService();
+  const { toast } = useToast();
+  const [roles, setRoles] = useState([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  useEffect(() => {
+    if (open) loadRoles();
+  }, [open]);
+  const loadRoles = async () => {
+    setLoadingRoles(true);
+    const rolesData = await getRoles();
+    if (rolesData) setRoles(rolesData);
+    setLoadingRoles(false);
+  };
+  const onSubmit = async (values) => {
+    try {
+      setSubmitting(true);
+      const result = await createAdminUser(
+        values.fullName,
+        values.email,
+        values.password,
+        values.roleId || undefined,
+        values.isSuperAdmin,
+      );
+      if (result) {
+        form.reset();
+        onOpenChange(false);
+        onSuccess?.();
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create Admin User</DialogTitle>
@@ -72,33 +97,62 @@ export const AdminCreateUser = ({ open, onOpenChange, onSuccess, }) => {
         {/* 🔴 FIX IS HERE */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField control={form.control} name="fullName" render={({ field }) => (<FormItem>
+            <FormField
+              control={form.control}
+              name="fullName"
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>Full Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field}/>
+                    <Input placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>)}/>
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="email" render={({ field }) => (<FormItem>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="admin@example.com" {...field}/>
+                    <Input
+                      type="email"
+                      placeholder="admin@example.com"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
-                </FormItem>)}/>
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="password" render={({ field }) => (<FormItem>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field}/>
+                    <Input type="password" placeholder="••••••••" {...field} />
                   </FormControl>
                   <FormMessage />
-                </FormItem>)}/>
+                </FormItem>
+              )}
+            />
 
-            <FormField control={form.control} name="isSuperAdmin" render={({ field }) => (<FormItem className="flex items-center space-x-3 rounded-md border p-4">
+            <FormField
+              control={form.control}
+              name="isSuperAdmin"
+              render={({ field }) => (
+                <FormItem className="flex items-center space-x-3 rounded-md border p-4">
                   <FormControl>
-                    <Checkbox checked={field.value} onCheckedChange={field.onChange}/>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
                   <div>
                     <FormLabel>Super Admin</FormLabel>
@@ -106,38 +160,62 @@ export const AdminCreateUser = ({ open, onOpenChange, onSuccess, }) => {
                       Super Admin has all permissions
                     </p>
                   </div>
-                </FormItem>)}/>
+                </FormItem>
+              )}
+            />
 
-            {!form.watch("isSuperAdmin") && (<FormField control={form.control} name="roleId" render={({ field }) => (<FormItem>
+            {!form.watch("isSuperAdmin") && (
+              <FormField
+                control={form.control}
+                name="roleId"
+                render={({ field }) => (
+                  <FormItem>
                     <FormLabel>Role</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange} disabled={loadingRoles}>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={loadingRoles}
+                    >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a role"/>
+                          <SelectValue placeholder="Select a role" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {roles.map((role) => (<SelectItem key={role.id} value={role.id}>
+                        {roles.map((role) => (
+                          <SelectItem key={role.id} value={role.id}>
                             {role.name}
-                          </SelectItem>))}
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
-                  </FormItem>)}/>)}
+                  </FormItem>
+                )}
+              />
+            )}
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={submitting}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={submitting}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={submitting}>
-                {submitting && (<Loader2 className="mr-2 h-4 w-4 animate-spin"/>)}
+                {submitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
                 Create Admin
               </Button>
             </DialogFooter>
           </form>
         </Form>
       </DialogContent>
-    </Dialog>);
+    </Dialog>
+  );
 };
 // import { useState, useEffect }, { useState, useEffect, Button } from "react";
 // import { Button } from "@/presentation/components/ui/button";

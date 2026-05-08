@@ -6,92 +6,112 @@ import { useDispatch } from "react-redux";
 import { Badge } from "@/presentation/components/ui/badge";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
-import { Search, MoreHorizontal, Loader2, } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/presentation/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, } from "@/presentation/components/ui/dialog";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue, } from "@/presentation/components/ui/select";
+import { Search, MoreHorizontal, Loader2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/presentation/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/presentation/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/presentation/components/ui/select";
 import { useToast } from "@/presentation/hooks/use-toast";
 import { useAdminService } from "@/presentation/services/adminService";
 const AdminUsers = () => {
-    const dispatch = useDispatch();
-    const { getUsers, updateUserStatus } = useAdminService();
-    const { toast } = useToast();
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedStatus, setSelectedStatus] = useState("all");
-    const [selectedRole, setSelectedRole] = useState("all");
-    const [users, setUsers] = useState([]);
-    const [pagination, setPagination] = useState(null);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [loading, setLoading] = useState(false);
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [showStatusDialog, setShowStatusDialog] = useState(false);
-    const [newStatus, setNewStatus] = useState();
-    const [updating, setUpdating] = useState(false);
-    const pageSize = 10;
-    // Fetch users whenever filters change
-    useEffect(() => {
-        fetchUsers();
-    }, [currentPage, selectedStatus, selectedRole]);
-    const fetchUsers = async () => {
-        try {
-            setLoading(true);
-            const response = await getUsers(currentPage, pageSize, searchQuery, selectedRole !== "all" ? selectedRole : undefined, selectedStatus !== "all" ? selectedStatus : undefined);
-            if (response) {
-                setUsers(response.users || []);
-                setPagination(response.pagination);
-            }
-        }
-        catch (error) {
-            console.error("Error fetching users:", error);
-            toast({
-                title: "Error",
-                description: "Failed to fetch users",
-                variant: "destructive",
-            });
-        }
-        finally {
-            setLoading(false);
-        }
-    };
-    const handleSearch = () => {
-        setCurrentPage(1);
-        fetchUsers();
-    };
-    const handleStatusChange = async () => {
-        if (!selectedUser || !newStatus)
-            return;
-        try {
-            setUpdating(true);
-            await updateUserStatus(selectedUser.id, newStatus);
-            // Refresh the users list
-            await fetchUsers();
-            setShowStatusDialog(false);
-            setNewStatus("");
-            setSelectedUser(null);
-        }
-        catch (error) {
-            console.error("Error updating status:", error);
-        }
-        finally {
-            setUpdating(false);
-        }
-    };
-    const getStatusColor = (status) => {
-        switch (status) {
-            case "active":
-                return "bg-green-100 text-green-800";
-            case "inactive":
-                return "bg-gray-100 text-gray-800";
-            case "blocked":
-                return "bg-red-100 text-red-800";
-            case "suspended":
-                return "bg-yellow-100 text-yellow-800";
-            default:
-                return "bg-gray-100 text-gray-800";
-        }
-    };
-    const statuses = ["active", "inactive", "blocked", "suspended"];
-    return (<div className="space-y-6">
+  const dispatch = useDispatch();
+  const { getUsers, updateUserStatus } = useAdminService();
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+  const [selectedRole, setSelectedRole] = useState("all");
+  const [users, setUsers] = useState([]);
+  const [pagination, setPagination] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showStatusDialog, setShowStatusDialog] = useState(false);
+  const [newStatus, setNewStatus] = useState();
+  const [updating, setUpdating] = useState(false);
+  const pageSize = 10;
+  // Fetch users whenever filters change
+  useEffect(() => {
+    fetchUsers();
+  }, [currentPage, selectedStatus, selectedRole]);
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      const response = await getUsers(
+        currentPage,
+        pageSize,
+        searchQuery,
+        selectedRole !== "all" ? selectedRole : undefined,
+        selectedStatus !== "all" ? selectedStatus : undefined,
+      );
+      if (response) {
+        setUsers(response.users || []);
+        setPagination(response.pagination);
+      }
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch users",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchUsers();
+  };
+  const handleStatusChange = async () => {
+    if (!selectedUser || !newStatus) return;
+    try {
+      setUpdating(true);
+      await updateUserStatus(selectedUser.id, newStatus);
+      // Refresh the users list
+      await fetchUsers();
+      setShowStatusDialog(false);
+      setNewStatus("");
+      setSelectedUser(null);
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "active":
+        return "bg-green-100 text-green-800";
+      case "inactive":
+        return "bg-gray-100 text-gray-800";
+      case "blocked":
+        return "bg-red-100 text-red-800";
+      case "suspended":
+        return "bg-yellow-100 text-yellow-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+  const statuses = ["active", "inactive", "blocked", "suspended"];
+  return (
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">
@@ -107,16 +127,25 @@ const AdminUsers = () => {
       {/* Filters and Search */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
-          <Input placeholder="Search by name or email..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleSearch()} className="pl-10"/>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or email..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+            className="pl-10"
+          />
         </div>
 
-        <Select value={selectedRole} onValueChange={(value) => {
+        <Select
+          value={selectedRole}
+          onValueChange={(value) => {
             setSelectedRole(value);
             setCurrentPage(1);
-        }}>
+          }}
+        >
           <SelectTrigger>
-            <SelectValue placeholder="Filter by role"/>
+            <SelectValue placeholder="Filter by role" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Roles</SelectItem>
@@ -126,12 +155,15 @@ const AdminUsers = () => {
           </SelectContent>
         </Select>
 
-        <Select value={selectedStatus} onValueChange={(value) => {
+        <Select
+          value={selectedStatus}
+          onValueChange={(value) => {
             setSelectedStatus(value);
             setCurrentPage(1);
-        }}>
+          }}
+        >
           <SelectTrigger>
-            <SelectValue placeholder="Filter by status"/>
+            <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Status</SelectItem>
@@ -143,35 +175,49 @@ const AdminUsers = () => {
         </Select>
 
         <Button onClick={handleSearch} disabled={loading}>
-          {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin"/>}
+          {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Search
         </Button>
       </div>
 
       {/* Status Tabs */}
       <div className="flex gap-2 border-b border-border pb-4 overflow-x-auto">
-        <Button variant={selectedStatus === "all" ? "default" : "ghost"} onClick={() => {
+        <Button
+          variant={selectedStatus === "all" ? "default" : "ghost"}
+          onClick={() => {
             setSelectedStatus("all");
             setCurrentPage(1);
-        }}>
+          }}
+        >
           All Users
         </Button>
-        {statuses.map((status) => (<Button key={status} variant={selectedStatus === status ? "default" : "ghost"} onClick={() => {
-                setSelectedStatus(status);
-                setCurrentPage(1);
-            }}>
+        {statuses.map((status) => (
+          <Button
+            key={status}
+            variant={selectedStatus === status ? "default" : "ghost"}
+            onClick={() => {
+              setSelectedStatus(status);
+              setCurrentPage(1);
+            }}
+          >
             {status.charAt(0).toUpperCase() + status.slice(1)}
-          </Button>))}
+          </Button>
+        ))}
       </div>
 
       {/* Table */}
       <div className="bg-card rounded-2xl border border-border overflow-hidden">
-        {loading ? (<div className="p-8 text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground"/>
+        {loading ? (
+          <div className="p-8 text-center">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto text-muted-foreground" />
             <p className="text-muted-foreground mt-2">Loading users...</p>
-          </div>) : users.length === 0 ? (<div className="p-8 text-center">
+          </div>
+        ) : users.length === 0 ? (
+          <div className="p-8 text-center">
             <p className="text-muted-foreground">No users found</p>
-          </div>) : (<>
+          </div>
+        ) : (
+          <>
             <table className="w-full">
               <thead className="bg-secondary text-left text-sm">
                 <tr>
@@ -184,7 +230,8 @@ const AdminUsers = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {users.map((user) => (<tr key={user.id} className="hover:bg-secondary/50">
+                {users.map((user) => (
+                  <tr key={user.id} className="hover:bg-secondary/50">
                     <td className="p-4 font-medium">{user.fullName}</td>
                     <td className="p-4 text-muted-foreground">{user.email}</td>
                     <td className="p-4">
@@ -202,40 +249,60 @@ const AdminUsers = () => {
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="sm">
-                            <MoreHorizontal className="h-4 w-4"/>
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => {
-                    setSelectedUser(user);
-                    setNewStatus(user.status);
-                    setShowStatusDialog(true);
-                }}>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUser(user);
+                              setNewStatus(user.status);
+                              setShowStatusDialog(true);
+                            }}
+                          >
                             Change Status
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                  </tr>))}
+                  </tr>
+                ))}
               </tbody>
             </table>
 
             {/* Pagination */}
-            {pagination && (<div className="p-4 border-t border-border flex items-center justify-between">
+            {pagination && (
+              <div className="p-4 border-t border-border flex items-center justify-between">
                 <p className="text-sm text-muted-foreground">
                   Page {pagination.currentPage} of {pagination.pages} (
                   {pagination.total} total)
                 </p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  >
                     Previous
                   </Button>
-                  <Button variant="outline" size="sm" disabled={currentPage === pagination.pages} onClick={() => setCurrentPage(Math.min(pagination.pages, currentPage + 1))}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={currentPage === pagination.pages}
+                    onClick={() =>
+                      setCurrentPage(
+                        Math.min(pagination.pages, currentPage + 1),
+                      )
+                    }
+                  >
                     Next
                   </Button>
                 </div>
-              </div>)}
-          </>)}
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Status Change Dialog */}
@@ -258,30 +325,43 @@ const AdminUsers = () => {
 
             <div>
               <p className="text-sm font-medium mb-2">New Status</p>
-              <Select value={newStatus || ""} onValueChange={(value) => setNewStatus(value)}>
+              <Select
+                value={newStatus || ""}
+                onValueChange={(value) => setNewStatus(value)}
+              >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select new status"/>
+                  <SelectValue placeholder="Select new status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {statuses.map((status) => (<SelectItem key={status} value={status}>
+                  {statuses.map((status) => (
+                    <SelectItem key={status} value={status}>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </SelectItem>))}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowStatusDialog(false)} disabled={updating}>
+            <Button
+              variant="outline"
+              onClick={() => setShowStatusDialog(false)}
+              disabled={updating}
+            >
               Cancel
             </Button>
-            <Button onClick={handleStatusChange} disabled={updating || !newStatus}>
-              {updating && <Loader2 className="w-4 h-4 mr-2 animate-spin"/>}
+            <Button
+              onClick={handleStatusChange}
+              disabled={updating || !newStatus}
+            >
+              {updating && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Update Status
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>);
+    </div>
+  );
 };
 export default AdminUsers;

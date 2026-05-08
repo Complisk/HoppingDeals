@@ -10,7 +10,11 @@ const isBrowser = typeof window !== "undefined";
 
 const safeGet = (key) => {
   if (!isBrowser) return null;
-  try { return localStorage.getItem(key); } catch { return null; }
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 };
 
 const parseStorageItem = (key) => {
@@ -20,7 +24,9 @@ const parseStorageItem = (key) => {
     return item ? JSON.parse(item) : null;
   } catch {
     if (isBrowser) {
-      try { localStorage.removeItem(key); } catch {}
+      try {
+        localStorage.removeItem(key);
+      } catch {}
     }
     return null;
   }
@@ -28,11 +34,15 @@ const parseStorageItem = (key) => {
 
 const safeSet = (key, value) => {
   if (!isBrowser) return;
-  try { localStorage.setItem(key, value); } catch {}
+  try {
+    localStorage.setItem(key, value);
+  } catch {}
 };
 const safeRemove = (key) => {
   if (!isBrowser) return;
-  try { localStorage.removeItem(key); } catch {}
+  try {
+    localStorage.removeItem(key);
+  } catch {}
 };
 
 // Server-rendered state must be deterministic — empty.

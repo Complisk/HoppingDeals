@@ -49,13 +49,22 @@ export default function AdminLayout({ children }) {
             size="sm"
             onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
             className="ml-auto"
-            aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            aria-label={
+              sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"
+            }
           >
-            {sidebarCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+            {sidebarCollapsed ? (
+              <Menu className="h-4 w-4" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
           </Button>
         </div>
         <div className="flex-1">
-          <DynamicSidebar onLogout={handleLogout} isCollapsed={sidebarCollapsed} />
+          <DynamicSidebar
+            onLogout={handleLogout}
+            isCollapsed={sidebarCollapsed}
+          />
         </div>
       </aside>
 
@@ -64,9 +73,16 @@ export default function AdminLayout({ children }) {
           <h1 className="text-lg font-semibold">Admin Dashboard</h1>
           <div className="flex items-center gap-4">
             <div className="text-right leading-tight hidden sm:block">
-              <p className="text-sm font-semibold truncate">{adminUser.fullName}</p>
+              <p className="text-sm font-semibold truncate">
+                {adminUser.fullName}
+              </p>
             </div>
-            <Button variant="ghost" size="icon" onClick={handleLogout} title="Logout">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleLogout}
+              title="Logout"
+            >
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

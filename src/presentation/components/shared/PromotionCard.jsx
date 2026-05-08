@@ -5,47 +5,76 @@ import { Button } from "@/presentation/components/ui/button";
 import { PromotionVisualCard } from "../shared/PromotionVisualCard";
 import { cn } from "@/presentation/lib/utils";
 import { useState } from "react";
-export const PromotionCard = ({ promotionId, imageUrl, backgroundColor, textItems, showOverlay, isActive, onStatusChange, className, }) => {
-    const [loading, setLoading] = useState(false);
-    const [active, setActive] = useState(isActive);
-    const handleToggleStatus = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch(`/api/promotions/${promotionId}/${active ? "inactive" : "active"}`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (!response.ok) {
-                throw new Error("Failed to update promotion status");
-            }
-            setActive(!active);
-            onStatusChange?.(!active);
-        }
-        catch (error) {
-            console.error(error);
-        }
-        finally {
-            setLoading(false);
-        }
-    };
-    return (<div className={cn("rounded-xl border border-border p-4 space-y-4", className)}>
+export const PromotionCard = ({
+  promotionId,
+  imageUrl,
+  backgroundColor,
+  textItems,
+  showOverlay,
+  isActive,
+  onStatusChange,
+  className,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [active, setActive] = useState(isActive);
+  const handleToggleStatus = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `/api/promotions/${promotionId}/${active ? "inactive" : "active"}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      if (!response.ok) {
+        throw new Error("Failed to update promotion status");
+      }
+      setActive(!active);
+      onStatusChange?.(!active);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <div
+      className={cn("rounded-xl border border-border p-4 space-y-4", className)}
+    >
       {/* Preview */}
-      <PromotionVisualCard imageUrl={imageUrl} backgroundColor={backgroundColor} text={textItems} showOverlay={showOverlay} className="aspect-video shadow-md"/>
+      <PromotionVisualCard
+        imageUrl={imageUrl}
+        backgroundColor={backgroundColor}
+        text={textItems}
+        showOverlay={showOverlay}
+        className="aspect-video shadow-md"
+      />
 
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Checkbox checked={active} onCheckedChange={handleToggleStatus} disabled={loading}/>
+          <Checkbox
+            checked={active}
+            onCheckedChange={handleToggleStatus}
+            disabled={loading}
+          />
           <span className="text-sm font-medium">
             {active ? "Active" : "Inactive"}
           </span>
         </div>
 
-        <Button size="sm" variant={active ? "destructive" : "default"} onClick={handleToggleStatus} disabled={loading}>
+        <Button
+          size="sm"
+          variant={active ? "destructive" : "default"}
+          onClick={handleToggleStatus}
+          disabled={loading}
+        >
           {loading ? "Updating..." : active ? "Deactivate" : "Activate"}
         </Button>
       </div>
-    </div>);
+    </div>
+  );
 };
