@@ -1,26 +1,372 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Design tokens (HSL) ─────────────────────────────────────────────────── */
+@theme {
+  --font-sans: var(--font-outfit), "Outfit", system-ui, sans-serif;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-light: hsl(var(--primary-light));
+  --color-primary-dark: hsl(var(--primary-dark));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent-light: hsl(var(--accent-light));
+  --color-accent-dark: hsl(var(--accent-dark));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-sidebar: hsl(var(--sidebar-background));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --shadow-sm: 0 1px 2px 0 hsla(0, 20%, 10%, 0.05);
+  --shadow-md: 0 4px 6px -1px hsla(0, 20%, 10%, 0.1), 0 2px 4px -2px hsla(0, 20%, 10%, 0.1);
+  --shadow-lg: 0 10px 15px -3px hsla(0, 20%, 10%, 0.1), 0 4px 6px -4px hsla(0, 20%, 10%, 0.1);
+  --shadow-xl: 0 20px 25px -5px hsla(0, 20%, 10%, 0.1), 0 8px 10px -6px hsla(0, 20%, 10%, 0.1);
+  --shadow-glow: 0 0 40px hsla(0, 80%, 50%, 0.25);
+  --shadow-accent-glow: 0 0 30px hsla(0, 85%, 60%, 0.3);
+
+  /* Animations */
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-slide-in-right: slide-in-right 0.3s ease-out;
+  --animate-slide-in-left: slide-in-left 0.3s ease-out;
+  --animate-scale-in: scale-in 0.2s ease-out;
+  --animate-bounce-soft: bounce-soft 1s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-slide-up: slide-up 0.6s ease-out;
+  --animate-fade-in: fade-in 0.4s ease-out;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Container utility shim (v3 had `container` w/ centering + padding) */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 2rem;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  @media (min-width: 1400px) {
+    max-width: 1400px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Custom utilities */
+@utility glass {
+  background: var(--gradient-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
+
+@utility gradient-primary {
+  background: var(--gradient-primary);
+}
+
+@utility gradient-accent {
+  background: var(--gradient-accent);
+}
+
+@utility gradient-hero {
+  background: var(--gradient-hero);
+}
+
+@utility text-gradient-primary {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+@utility shadow-accent-glow {
+  box-shadow: var(--shadow-accent-glow);
+}
+
+/* ── Design system CSS variables ────────────────────────────────────────── */
+@layer base {
+  :root {
+    /* Core */
+    --background: 0 0% 98%;
+    --foreground: 0 20% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 20% 10%;
+
+    /* Red brand */
+    --primary: 0 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 0 75% 60%;
+    --primary-dark: 0 85% 40%;
+
+    --accent: 0 85% 60%;
+    --accent-foreground: 0 0% 100%;
+    --accent-light: 0 90% 70%;
+    --accent-dark: 0 80% 50%;
+
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 25%;
+
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 45%;
+
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 80% 50%;
+
+    --radius: 0.75rem;
+
+    --success: 0 70% 45%;
+    --success-foreground: 0 0% 100%;
+    --warning: 0 85% 60%;
+    --warning-foreground: 0 0% 100%;
+    --info: 0 80% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(0, 80%, 50%) 0%, hsl(0, 85%, 40%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(0, 85%, 60%) 0%, hsl(0, 80%, 50%) 100%);
+    --gradient-hero: linear-gradient(180deg, hsl(0, 0%, 98%) 0%, hsl(0, 80%, 95%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%) 0%, hsl(0, 0%, 98%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsla(0, 0%, 100%, 0.9) 0%, hsla(0, 0%, 100%, 0.7) 100%);
+
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 0 80% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 20% 95%;
+    --sidebar-accent-foreground: 0 80% 50%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 80% 50%;
+
+    --chart-1: 0 80% 50%;
+    --chart-2: 0 85% 60%;
+    --chart-3: 0 80% 50%;
+    --chart-4: 0 85% 55%;
+    --chart-5: 0 90% 50%;
+  }
+
+  .dark {
+    --background: 0 20% 8%;
+    --foreground: 0 0% 98%;
+    --card: 0 20% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 80% 50%;
+    --primary-foreground: 0 0% 98%;
+    --accent: 0 85% 60%;
+    --accent-foreground: 0 0% 100%;
+    --secondary: 0 20% 18%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 0 20% 18%;
+    --muted-foreground: 0 0% 55%;
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 20% 18%;
+    --input: 0 20% 18%;
+    --ring: 0 80% 50%;
+
+    --sidebar-background: 0 20% 10%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 0 80% 50%;
+    --sidebar-primary-foreground: 0 0% 10%;
+    --sidebar-accent: 0 20% 15%;
+    --sidebar-accent-foreground: 0 85% 60%;
+    --sidebar-border: 0 20% 15%;
+    --sidebar-ring: 0 80% 50%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-sans);
+    letter-spacing: -0.025em;
+  }
+}
+
+/* ── Keyframes ──────────────────────────────────────────────────────────── */
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+@keyframes slide-in-right {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes scale-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(-5%); }
+  50%      { transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.8; }
+}
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Custom scrollbar ───────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* ── React DatePicker (kept from old project) ───────────────────────────── */
+.react-datepicker {
+  background: hsl(var(--card));
+  border: 2px solid hsl(var(--border));
+  box-shadow: var(--shadow-xl);
+  border-radius: 0.75rem;
+  font-family: var(--font-sans);
+}
+.react-datepicker__header {
+  background: hsl(var(--secondary) / 0.5);
+  border-bottom: 2px solid hsl(var(--border));
+  border-radius: 0.75rem 0.75rem 0 0;
+  padding: 1rem 0 0.5rem;
+}
+.react-datepicker__current-month {
+  color: hsl(var(--foreground));
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+.react-datepicker__day-name {
+  color: hsl(var(--muted-foreground));
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+.react-datepicker__day {
+  color: hsl(var(--foreground));
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  margin: 0.2rem;
+}
+.react-datepicker__day:hover {
+  background: hsl(var(--primary) / 0.2);
+}
+.react-datepicker__day--selected,
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-weight: 700;
+  box-shadow: var(--shadow-md);
+}
+.react-datepicker__day--in-range,
+.react-datepicker__day--in-selecting-range {
+  background: hsl(var(--primary) / 0.15);
+  color: hsl(var(--foreground));
+}
+.react-datepicker__day--disabled {
+  color: hsl(var(--muted-foreground) / 0.3);
+  cursor: not-allowed;
+}
+.react-datepicker__day--disabled:hover { background: transparent; }
+.react-datepicker__day--today {
+  font-weight: 700;
+  border: 2px solid hsl(var(--primary) / 0.5);
+  background: hsl(var(--primary) / 0.05);
+}
+.react-datepicker__navigation { top: 1rem; }
+.react-datepicker__navigation-icon::before {
+  border-color: hsl(var(--foreground));
+  border-width: 2px 2px 0 0;
+  height: 7px;
+  width: 7px;
+}
+.react-datepicker__navigation:hover *::before { border-color: hsl(var(--primary)); }
+.react-datepicker__triangle { display: none; }
+.react-datepicker-popper { z-index: 9999 !important; }
+.react-datepicker__week { display: flex; justify-content: space-around; }
