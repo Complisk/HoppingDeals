@@ -122,16 +122,20 @@ export default function Footer() {
             </p>
           </Link>
 
-          <div className="flex items-center space-x-6 text-white font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 text-white font-medium">
+            {/* Instagram pill — visibly larger than the locale toggles so the
+                brand's social presence is unmissable from the footer. */}
             <a
               href="https://www.instagram.com/complisk_promo"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Complisk on Instagram"
-              className="text-gray-400 hover:text-white transition"
+              aria-label="Follow Complisk on Instagram"
+              className="inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white px-4 py-2 text-sm font-semibold text-white hover:text-[#1A1110] transition-colors"
             >
               <InstagramIcon className="h-5 w-5" />
+              Follow on Instagram
             </a>
+
             <button
               type="button"
               className="flex items-center hover:underline transition"
