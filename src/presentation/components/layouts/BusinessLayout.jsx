@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   CreditCard,
@@ -10,7 +10,11 @@ import {
   X,
   LogOut,
   Megaphone,
+  ChevronDown,
+  UserCircle,
+  Layers,
 } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import Logo from "@/presentation/components/shared/Logo";
 import { Button } from "@/presentation/components/ui/button";
@@ -22,13 +26,15 @@ import { useAuthService } from "@/presentation/services/authService";
 
 const sidebarLinks = [
   { to: "/business/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/business/promotions", icon: Megaphone, label: "My Promotions" },
+  { to: "/business/promotions", icon: Megaphone, label: "My Active Promotions" },
+  { to: "/business/promotion-templates", icon: Layers, label: "Saved Templates" },
   { to: "/business/subscription", icon: CreditCard, label: "Subscription" },
 ];
 
 export default function BusinessLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { toast } = useToast();
   const { logout: serverLogout } = useAuthService();
@@ -43,6 +49,7 @@ export default function BusinessLayout({ children }) {
       title: "Logged out",
       description: "You have been successfully logged out.",
     });
+    router.replace("/business/login");
   };
 
   return (
@@ -60,8 +67,8 @@ export default function BusinessLayout({ children }) {
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="p-6 border-b border-sidebar-border flex-shrink-0">
-          <Logo />
+        <div className="h-16 px-4 flex items-center border-b border-sidebar-border flex-shrink-0">
+          <Logo size="xl" />
         </div>
 
         <div className="p-4 flex-shrink-0">
@@ -124,19 +131,56 @@ export default function BusinessLayout({ children }) {
           <div className="sm:hidden md:flex" />
 
           {business && (
-            <div className="flex items-center gap-3 px-4 py-3">
-              <div className="w-10 h-10 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold">
-                {business.name?.charAt(0).toUpperCase()}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">
-                  {business.name}
-                </p>
-                <p className="text-xs text-sidebar-foreground/60 truncate">
-                  {business.email}
-                </p>
-              </div>
-            </div>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center gap-3 rounded-full border border-border bg-card px-3 py-1.5 hover:bg-muted transition-colors focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  aria-label="Open business profile menu"
+                >
+                  <div className="w-9 h-9 rounded-full gradient-primary flex items-center justify-center text-primary-foreground font-bold shrink-0">
+                    {business.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="hidden sm:flex flex-col items-start min-w-0 leading-tight">
+                    <span className="text-sm font-semibold text-foreground truncate max-w-45">
+                      {business.name}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate max-w-45">
+                      {business.email}
+                    </span>
+                  </div>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0" />
+                </button>
+              </DropdownMenu.Trigger>
+
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={8}
+                  className="z-50 min-w-50 rounded-xl border border-border bg-card p-1 shadow-lg"
+                >
+                  <DropdownMenu.Item asChild>
+                    <Link
+                      href="/business/profile"
+                      className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted focus:bg-muted focus:outline-none cursor-pointer"
+                    >
+                      <UserCircle className="h-4 w-4" />
+                      My Profile
+                    </Link>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item asChild>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:outline-none cursor-pointer"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           )}
         </header>
 

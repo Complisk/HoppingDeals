@@ -8,7 +8,7 @@ export class CreateSubscriptionCheckoutUseCase {
     this.env = env;
   }
 
-  async execute({ businessId, templateId }) {
+  async execute({ businessId, templateId, frontendUrl }) {
     const business = await this.businessRepo.findById(businessId);
     if (!business) throw new NotFoundError("Business");
 
@@ -36,8 +36,8 @@ export class CreateSubscriptionCheckoutUseCase {
         quantity: template.durationMonths,
         recurringInterval: "month",
       },
-      successUrl: `${this.env.frontendUrl}/subscription-success`,
-      cancelUrl: `${this.env.frontendUrl}/subscription-cancel`,
+      successUrl: `${frontendUrl || this.env?.frontendUrl || ""}/business/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${frontendUrl || this.env?.frontendUrl || ""}/business/subscription`,
       metadata: {
         businessId: business.id,
         templateId: template.id,

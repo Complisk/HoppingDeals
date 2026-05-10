@@ -17,6 +17,7 @@ import {
   Power,
   PowerOff,
   Loader2,
+  Plus,
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -39,6 +40,8 @@ const BusinessDashboard = () => {
   const { toast } = useToast();
   const [promotions, setPromotions] = useState([]);
   const [dashboard, setDashboard] = useState(null);
+  const [templates, setTemplates] = useState([]);
+  const [hasSubscription, setHasSubscription] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedPromotion, setSelectedPromotion] = useState(null);
   const [actioningId, setActioningId] = useState(null);
@@ -47,9 +50,32 @@ const BusinessDashboard = () => {
       setLoading(true);
       const analyticsRes = await getDashboardAnalytics();
       const promoRes = await getBusinessPromotions("", "");
-      console.log(analyticsRes, "check alylatice please");
       setPromotions(promoRes?.response || []);
       setDashboard(analyticsRes?.response?.response || null);
+
+      // Saved templates list (best-effort, swallow errors so a flaky
+      // endpoint can't break the rest of the dashboard).
+      try {
+        const tplRes = await fetch("/api/business/promotion-templates", {
+          credentials: "include",
+        });
+        if (tplRes.ok) {
+          const data = await tplRes.json();
+          setTemplates(Array.isArray(data) ? data : data?.items || []);
+        }
+      } catch {}
+
+      // Active subscription? Drives whether the empty-state shows a
+      // Subscribe CTA or just a Create Template CTA.
+      try {
+        const subRes = await fetch("/api/subscription/active", {
+          credentials: "include",
+        });
+        if (subRes.ok) {
+          const sub = await subRes.json();
+          setHasSubscription(!!(sub?.id || sub?.subscription?.id));
+        }
+      } catch {}
     } catch (error) {
       console.error("Fetch dashboard error:", error);
       toast({
@@ -232,6 +258,65 @@ const BusinessDashboard = () => {
         )}
       </section>
 
+      {/* ---------------- Saved Templates ---------------- */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold flex items-center gap-2">
+            <Layers className="h-5 w-5 text-primary" />
+            Saved Templates
+          </h2>
+          <Button variant="hero" asChild>
+            <Link href="/business/promotion-templates/create">
+              <Plus className="h-4 w-4 mr-1" />
+              Create Template
+            </Link>
+          </Button>
+        </div>
+
+        {loading ? (
+          <div className="h-40 bg-muted rounded-2xl animate-pulse" />
+        ) : templates.length ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {templates.slice(0, 4).map((tpl) => (
+              <Link
+                key={tpl.id}
+                href="/business/promotion-templates"
+                className="block rounded-xl border border-border overflow-hidden bg-card hover:shadow-md transition-shadow"
+              >
+                <div
+                  className="aspect-4/3 bg-muted bg-cover bg-center"
+                  style={
+                    tpl.imageUrl
+                      ? { backgroundImage: `url(${tpl.imageUrl})` }
+                      : tpl.backgroundColor
+                        ? { backgroundColor: tpl.backgroundColor }
+                        : undefined
+                  }
+                />
+                <div className="p-3">
+                  <p className="text-sm font-semibold truncate">
+                    {tpl.name || "Untitled"}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          <div className="bg-card border rounded-2xl p-10 text-center">
+            <h3 className="font-semibold mb-2">No saved templates yet</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Create templates now and reuse them when you launch promotions.
+            </p>
+            <Button variant="hero" asChild>
+              <Link href="/business/promotion-templates/create">
+                <Plus className="h-4 w-4 mr-1" />
+                Create Template
+              </Link>
+            </Button>
+          </div>
+        )}
+      </section>
+
       {/* ---------------- Promotions ---------------- */}
       <section>
         <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
@@ -263,14 +348,32 @@ const BusinessDashboard = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-card border-dashed border rounded-2xl p-10 text-center">
-            <h3 className="font-semibold mb-2">No Active Promotions</h3>
+          <div className="bg-card border rounded-2xl p-10 text-center">
+            <h3 className="font-semibold mb-2">No promotions yet</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Create your first promotion to build momentum
+              {hasSubscription
+                ? "Create your first promotion to build momentum."
+                : "You need an active subscription to create promotions. You can still create templates now and use them later."}
             </p>
-            <Button asChild>
-              <Link href="/business/create-promotion">Create Promotion</Link>
-            </Button>
+            <div className="flex justify-center gap-2 flex-wrap">
+              <Button variant="outline" asChild>
+                <Link href="/business/promotion-templates/create">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Create Template
+                </Link>
+              </Button>
+              {hasSubscription ? (
+                <Button variant="hero" asChild>
+                  <Link href="/business/create-promotion">
+                    Create Promotion
+                  </Link>
+                </Button>
+              ) : (
+                <Button variant="hero" asChild>
+                  <Link href="/business/subscription">Subscribe</Link>
+                </Button>
+              )}
+            </div>
           </div>
         )}
       </section>

@@ -3,13 +3,29 @@
 import { useApi } from "@/presentation/hooks/useApi";
 export const useSubscriptionService = () => {
   const { call } = useApi();
-  const checkout = async (months) => {
+  // Backend takes a Subscription Template UUID (Starter/Professional/
+  // Enterprise) and returns a Stripe Checkout URL.
+  const checkout = async (templateId) => {
     const { response, error } = await call("/subscription/checkout", {
       method: "POST",
-      data: { months },
+      data: { templateId },
+    });
+    if (error) {
+      throw new Error(
+        typeof error === "string"
+          ? error
+          : error?.message || "Could not start checkout",
+      );
+    }
+    return response;
+  };
+
+  const listTemplates = async () => {
+    const { response, error } = await call("/subscription-template", {
+      method: "GET",
     });
     if (error) throw new Error(error);
-    return response;
+    return Array.isArray(response) ? response : [];
   };
   const getActive = async () => {
     const { response, error } = await call("/subscription/active", {
@@ -26,6 +42,6 @@ export const useSubscriptionService = () => {
     if (error) throw new Error(error);
     return response;
   };
-  return { checkout, getActive, getHistory };
+  return { checkout, listTemplates, getActive, getHistory };
 };
 export default useSubscriptionService;
