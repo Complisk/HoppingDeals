@@ -1,8 +1,11 @@
 import { Outfit } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import "react-toastify/dist/ReactToastify.css";
 import "react-datepicker/dist/react-datepicker.css";
 import AppProviders from "@/presentation/providers/app-providers";
+
+const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -34,6 +37,11 @@ export const metadata = {
   alternates: {
     canonical: "/",
   },
+  // Note: openGraph.images and twitter.images are intentionally omitted
+  // here — Next.js auto-picks src/app/opengraph-image.js (rendered by
+  // @vercel/og at request time, 1200×630, properly sized for social
+  // platforms). Per-route opengraph-image.js files (e.g. for /promotion/
+  // [id]) override this default.
   openGraph: {
     type: "website",
     title: "Complisk | Local business promotions and deals",
@@ -41,27 +49,27 @@ export const metadata = {
       "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
     url: "/",
     siteName: "Complisk",
-    images: [
-      {
-        url: "/complisk-logo.png",
-        width: 583,
-        height: 287,
-        alt: "Complisk local business promotions platform",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Complisk | Local business promotions and deals",
     description:
       "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
-    images: ["/complisk-logo.png"],
   },
   icons: {
-    icon: "/complisk-logo.png",
-    shortcut: "/complisk-logo.png",
-    apple: "/complisk-logo.png",
+    // Multiple sizes so the browser picks the sharpest one for the tab,
+    // bookmark, and home-screen icon. Production complisk.com ships
+    // these same files in /public.
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/logo-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/favicon-32x32.png",
+    apple: "/apple-touch-icon.png",
   },
+  manifest: "/manifest.json",
   robots: { index: true, follow: true },
 };
 
@@ -76,6 +84,7 @@ export default function RootLayout({ children }) {
     <html lang="en" className={`${outfit.variable} h-full`}>
       <body className="min-h-full antialiased">
         <AppProviders>{children}</AppProviders>
+        {GA_ID ? <GoogleAnalytics gaId={GA_ID} /> : null}
       </body>
     </html>
   );
