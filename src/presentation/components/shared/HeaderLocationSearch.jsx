@@ -1,27 +1,24 @@
 "use client";
 
+// Location chip + autocomplete dropdown that powers the "I want to see
+// promotions in <X>" filter. Backed by /api/location/search, which proxies
+// to OpenStreetMap Nominatim. Free, no API key, no billing — at the cost
+// of slightly chunkier results than Google Places.
+
 import React, { useState, useEffect, useRef } from "react";
 import { MapPin } from "lucide-react";
+
 const HeaderLocationSearch = ({ className = "" }) => {
   const [currentLocation, setCurrentLocation] = useState("Loading...");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const autoServiceRef = useRef(null);
-  const detailsServiceRef = useRef(null);
   const debounceRef = useRef(null);
+  const abortRef = useRef(null);
   const containerRef = useRef(null);
-  console.log(predictions, "predictions");
-  // Initialize Google Places services
-  useEffect(() => {
-    if (!window.google) return;
-    autoServiceRef.current =
-      new window.google.maps.places.AutocompleteService();
-    detailsServiceRef.current = new window.google.maps.places.PlacesService(
-      document.createElement("div"),
-    );
-  }, []);
+  const inputRef = useRef(null);
+
   // Load current location from localStorage
   useEffect(() => {
     const loadLocation = () => {
@@ -43,92 +40,92 @@ const HeaderLocationSearch = ({ className = "" }) => {
       }
     };
     loadLocation();
-    // Listen for location changes from other components
-    const handleLocationChange = () => {
-      loadLocation();
-    };
+    const handleLocationChange = () => loadLocation();
     window.addEventListener("locationChanged", handleLocationChange);
     return () =>
       window.removeEventListener("locationChanged", handleLocationChange);
   }, []);
-  // Handle search input changes
+
+  // Autofocus the input when the dropdown opens.
+  useEffect(() => {
+    if (isSearchOpen) {
+      // requestAnimationFrame is more reliable than autoFocus during a
+      // conditional mount with click-outside listeners attached.
+      const id = requestAnimationFrame(() => inputRef.current?.focus());
+      return () => cancelAnimationFrame(id);
+    }
+  }, [isSearchOpen]);
+
+  // Search with debounce. Aborts any in-flight request when the user types again.
   const handleSearchChange = (value) => {
     setQuery(value);
-    if (!value || !autoServiceRef.current) {
+    clearTimeout(debounceRef.current);
+    abortRef.current?.abort();
+
+    const trimmed = value.trim();
+    if (trimmed.length < 2) {
       setPredictions([]);
+      setLoading(false);
       return;
     }
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+
+    debounceRef.current = setTimeout(async () => {
       setLoading(true);
-      const options = {
-        input: value,
-        componentRestrictions: { country: "us" },
-      };
-      autoServiceRef.current.getPlacePredictions(options, (preds, status) => {
-        setLoading(false);
-        if (status === "OK" && preds) setPredictions(preds);
-        else setPredictions([]);
-      });
-    }, 500);
-  };
-  // Handle location selection
-  const handleSelect = (prediction) => {
-    setQuery(prediction.description);
-    detailsServiceRef.current.getDetails(
-      { placeId: prediction.place_id },
-      (place, status) => {
-        if (status !== "OK") return;
-        let city = "";
-        let state = "";
-        let state_code = "";
-        let country = "";
-        let lat = null;
-        let lng = null;
-        place.address_components.forEach((comp) => {
-          if (comp.types.includes("locality")) city = comp.long_name;
-          if (comp.types.includes("administrative_area_level_1")) {
-            state = comp.long_name;
-            state_code = comp.short_name;
-          }
-          if (comp.types.includes("country")) {
-            country = comp.long_name;
-          }
-        });
-        if (place.geometry?.location) {
-          lat = place.geometry.location.lat();
-          lng = place.geometry.location.lng();
-        }
-        // Save to localStorage with the same structure as useUserLocation
-        const locationData = {
-          city: city || null,
-          state: state || null,
-          state_code: state_code || null,
-          country: country || null,
-          lat: lat,
-          lng: lng,
-          timezone: null,
-          source: "manual",
-        };
-        localStorage.setItem("userLocation", JSON.stringify(locationData));
-        // Update display
-        const displayText =
-          city && state_code
-            ? `${city}, ${state_code}`
-            : city || state || "Set Location";
-        setCurrentLocation(displayText);
-        // Emit location change event
-        window.dispatchEvent(
-          new CustomEvent("locationChanged", { detail: locationData }),
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      try {
+        const res = await fetch(
+          `/api/location/search?q=${encodeURIComponent(trimmed)}`,
+          { signal: ctrl.signal },
         );
-        // Close search
-        setIsSearchOpen(false);
-        setQuery("");
-        setPredictions([]);
-      },
-    );
+        if (!res.ok) {
+          setPredictions([]);
+          return;
+        }
+        const data = await res.json();
+        setPredictions(Array.isArray(data?.results) ? data.results : []);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("location search failed", err);
+          setPredictions([]);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }, 350);
   };
-  // Handle click outside to close dropdown
+
+  // Pick a result.
+  const handleSelect = (prediction) => {
+    const locationData = {
+      city: prediction.city,
+      state: prediction.state,
+      state_code: prediction.state_code,
+      country: prediction.country,
+      country_code: prediction.country_code,
+      lat: prediction.lat,
+      lng: prediction.lng,
+      timezone: null,
+      source: "manual",
+    };
+    localStorage.setItem("userLocation", JSON.stringify(locationData));
+
+    const displayText =
+      prediction.city && prediction.state_code
+        ? `${prediction.city}, ${prediction.state_code}`
+        : prediction.city || prediction.state || "Set Location";
+    setCurrentLocation(displayText);
+
+    window.dispatchEvent(
+      new CustomEvent("locationChanged", { detail: locationData }),
+    );
+
+    setIsSearchOpen(false);
+    setQuery("");
+    setPredictions([]);
+  };
+
+  // Click-outside to close.
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -147,20 +144,20 @@ const HeaderLocationSearch = ({ className = "" }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isSearchOpen]);
+
   return (
     <div ref={containerRef} className={`relative ${className}`}>
-      {/* Location Display / Trigger */}
       <button
-        onClick={() => setIsSearchOpen(!isSearchOpen)}
+        type="button"
+        onClick={() => setIsSearchOpen((v) => !v)}
         className="flex items-center gap-2 text-sm text-gray-700 hover:text-red-500 transition-colors"
       >
-        <MapPin className="h-5 w-5 text-red-500 flex-shrink-0" />
-        <span className="font-medium truncate max-w-[200px]">
+        <MapPin className="h-5 w-5 text-red-500 shrink-0" />
+        <span className="font-medium truncate max-w-50">
           {currentLocation}
         </span>
       </button>
 
-      {/* Search Dropdown */}
       {isSearchOpen && (
         <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 p-3">
           <div className="mb-2">
@@ -168,12 +165,12 @@ const HeaderLocationSearch = ({ className = "" }) => {
               Search for a city or state
             </p>
             <input
+              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => handleSearchChange(e.target.value)}
               placeholder="Enter city name..."
               className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              autoFocus
             />
           </div>
 
@@ -185,23 +182,29 @@ const HeaderLocationSearch = ({ className = "" }) => {
             <ul className="max-h-60 overflow-y-auto border-t border-gray-100 mt-2">
               {predictions.map((pred) => (
                 <li
-                  key={pred.place_id}
+                  key={pred.id}
                   onClick={() => handleSelect(pred)}
-                  className="px-3 py-2 cursor-pointer hover:bg-red-50 rounded text-sm flex justify-between items-center"
+                  className="px-3 py-2 cursor-pointer hover:bg-red-50 rounded text-sm flex justify-between items-center gap-2"
                 >
-                  <span className="text-gray-700">{pred.description}</span>
-                  <span className="text-xs text-gray-400">
-                    {" "}
-                    {pred.types.includes("locality") ? "(City)" : "(State)"}
+                  <span className="text-gray-700 truncate" title={pred.label}>
+                    {pred.label}
+                  </span>
+                  <span className="text-xs text-gray-400 shrink-0">
+                    {pred.kind === "state" ? "(State)" : "(City)"}
                   </span>
                 </li>
               ))}
             </ul>
           )}
 
-          {!loading && query && predictions.length === 0 && (
+          {!loading && query.trim().length >= 2 && predictions.length === 0 && (
             <p className="text-xs text-gray-400 py-2 text-center">
-              No cities found
+              No matches found
+            </p>
+          )}
+          {!loading && query.trim().length < 2 && (
+            <p className="text-xs text-gray-400 py-2 text-center">
+              Type at least 2 characters
             </p>
           )}
         </div>
@@ -209,4 +212,5 @@ const HeaderLocationSearch = ({ className = "" }) => {
     </div>
   );
 };
+
 export default HeaderLocationSearch;

@@ -1,90 +1,98 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+// City / state autocomplete used by the promotion-create flow
+// (LocationTargeter). Backed by /api/location/search which proxies to
+// OpenStreetMap Nominatim — same provider as HeaderLocationSearch, no
+// Google Maps key or billing required.
+//
+// `searchType` filters the result set: "city" only returns rows whose
+// kind is "city", "state" only returns rows whose kind is "state". The
+// endpoint hands us a `kind` field that classifies each result based on
+// Nominatim's addresstype.
+
+import React, { useState, useRef, useEffect, memo } from "react";
+
 const PlaceSearch = ({ searchType, onSelectPlace }) => {
   const [query, setQuery] = useState("");
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const autoServiceRef = useRef(null);
-  const detailsServiceRef = useRef(null);
   const debounceRef = useRef(null);
+  const abortRef = useRef(null);
   const containerRef = useRef(null);
-  useEffect(() => {
-    if (!window.google) return;
-    autoServiceRef.current =
-      new window.google.maps.places.AutocompleteService();
-    detailsServiceRef.current = new window.google.maps.places.PlacesService(
-      document.createElement("div"),
-    );
-  }, []);
+
+  useEffect(() => () => abortRef.current?.abort(), []);
+
   const handleSearchChange = (value) => {
     setQuery(value);
-    if (!value || !autoServiceRef.current) {
+    clearTimeout(debounceRef.current);
+    abortRef.current?.abort();
+
+    const trimmed = value.trim();
+    if (trimmed.length < 2) {
       setPredictions([]);
+      setLoading(false);
       return;
     }
-    clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
+
+    debounceRef.current = setTimeout(async () => {
       setLoading(true);
-      const options = {
-        input: value,
-        componentRestrictions: { country: "us" },
-      };
-      if (searchType === "city") options.types = ["(cities)"];
-      if (searchType === "state") options.types = ["(regions)"];
-      autoServiceRef.current.getPlacePredictions(options, (preds, status) => {
+      const ctrl = new AbortController();
+      abortRef.current = ctrl;
+      try {
+        const res = await fetch(
+          `/api/location/search?q=${encodeURIComponent(trimmed)}`,
+          { signal: ctrl.signal },
+        );
+        if (!res.ok) {
+          setPredictions([]);
+          return;
+        }
+        const data = await res.json();
+        const all = Array.isArray(data?.results) ? data.results : [];
+        // Filter to the requested kind. Nominatim's classification can
+        // miss a state header on city queries (and vice versa), so we
+        // also include rows that have the matching field populated.
+        const filtered = all.filter((r) => {
+          if (searchType === "city") return r.kind === "city" || !!r.city;
+          if (searchType === "state") return r.kind === "state" || (!r.city && !!r.state);
+          return true;
+        });
+        setPredictions(filtered);
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          console.error("place search failed", err);
+          setPredictions([]);
+        }
+      } finally {
         setLoading(false);
-        if (status === "OK" && preds) setPredictions(preds);
-        else setPredictions([]);
-      });
-    }, 500);
+      }
+    }, 350);
   };
-  const handleSelect = (prediction) => {
-    setQuery(prediction.description);
+
+  const handleSelect = (pred) => {
+    setQuery(pred.label);
     setPredictions([]);
-    detailsServiceRef.current.getDetails(
-      { placeId: prediction.place_id },
-      (place, status) => {
-        if (status !== "OK") return;
-        console.log(place, "check selected place details");
-        let city = "";
-        let state = "";
-        let state_code = "";
-        let country = "";
-        let country_code = "";
-        place.address_components.forEach((comp) => {
-          if (comp.types.includes("locality")) city = comp.long_name;
-          if (comp.types.includes("administrative_area_level_1")) {
-            state = comp.long_name;
-            state_code = comp.short_name;
-          }
-          if (comp.types.includes("country")) {
-            country = comp.long_name;
-            country_code = comp.short_name;
-          }
-        });
-        onSelectPlace({
-          placeId: place.place_id,
-          description: prediction.description,
-          city,
-          state,
-          state_code,
-          country,
-          country_code,
-          formattedAddress: place.formatted_address,
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-        });
-      },
-    );
+    onSelectPlace({
+      placeId: pred.id,
+      description: pred.label,
+      city: pred.city || "",
+      state: pred.state || "",
+      state_code: pred.state_code || "",
+      country: pred.country || "",
+      country_code: pred.country_code || "",
+      formattedAddress: pred.label,
+      lat: pred.lat,
+      lng: pred.lng,
+    });
   };
-  /** 🔥 KEY PART: hide dropdown on blur */
+
+  // Hide the dropdown when focus leaves the component.
   const handleBlur = (e) => {
-    // If focus moves outside this component, close dropdown
     if (!containerRef.current?.contains(e.relatedTarget)) {
       setPredictions([]);
     }
   };
+
   return (
     <div
       ref={containerRef}
@@ -102,157 +110,33 @@ const PlaceSearch = ({ searchType, onSelectPlace }) => {
         className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary"
       />
 
-      {loading && <p className="text-xs text-gray-500">Loading...</p>}
+      {loading && <p className="text-xs text-gray-500">Searching...</p>}
 
       {predictions.length > 0 && (
         <ul className="absolute z-50 w-full border border-gray-300 rounded-lg max-h-52 overflow-y-auto bg-white shadow-md">
           {predictions.map((pred) => (
             <li
-              key={pred.place_id}
+              key={pred.id}
               tabIndex={0}
               onClick={() => handleSelect(pred)}
-              className="px-3 py-2 cursor-pointer hover:bg-gray-100 flex justify-between"
+              className="px-3 py-2 cursor-pointer hover:bg-gray-100 flex justify-between gap-2"
             >
-              <span>{pred.description}</span>
-              <span className="text-xs text-gray-500">
-                {pred.types.includes("locality") ? "(City)" : "(State)"}
+              <span className="truncate" title={pred.label}>
+                {pred.label}
+              </span>
+              <span className="text-xs text-gray-500 shrink-0">
+                {pred.kind === "state" ? "(State)" : "(City)"}
               </span>
             </li>
           ))}
         </ul>
       )}
+
+      {!loading && query.trim().length >= 2 && predictions.length === 0 && (
+        <p className="text-xs text-gray-400">No matches found</p>
+      )}
     </div>
   );
 };
-export default React.memo(PlaceSearch);
-// import React, { useState, useEffect, useRef } from "react";
-// interface PlaceSearchProps {
-//   searchType: "city" | "state";
-//   onSelectPlace: (place: {
-//     placeId: string;
-//     description: string;
-//     city?: string;
-//     state?: string;
-//     state_code?: string;
-//     country?: string;
-//     country_code?: string;
-//     formattedAddress?: string;
-//     lat?: number;
-//     lng?: number;
-//   }) => void;
-// }
-// const PlaceSearch: React.FC<PlaceSearchProps> = ({
-//   searchType,
-//   onSelectPlace,
-// }) => {
-//   const [query, setQuery] = useState("");
-//   const [predictions, setPredictions] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   const autoServiceRef = useRef<any>(null);
-//   const detailsServiceRef = useRef<any>(null);
-//   const debounceRef = useRef<any>(null);
-//   useEffect(() => {
-//     if (!window.google) return;
-//     autoServiceRef.current =
-//       new window.google.maps.places.AutocompleteService();
-//     detailsServiceRef.current = new window.google.maps.places.PlacesService(
-//       document.createElement("div"),
-//     );
-//   }, []);
-//   const handleSearchChange = (value: string) => {
-//     setQuery(value);
-//     if (!value || !autoServiceRef.current) {
-//       setPredictions([]);
-//       return;
-//     }
-//     clearTimeout(debounceRef.current);
-//     debounceRef.current = setTimeout(() => {
-//       setLoading(true);
-//       const options: any = {
-//         input: value,
-//         componentRestrictions: { country: "us" },
-//       };
-//       if (searchType === "city") options.types = ["(cities)"];
-//       else if (searchType === "state") options.types = ["(regions)"];
-//       autoServiceRef.current.getPlacePredictions(
-//         options,
-//         (preds: any, status: string) => {
-//           setLoading(false);
-//           if (status === "OK" && preds) setPredictions(preds);
-//           else setPredictions([]);
-//         },
-//       );
-//     }, 500);
-//   };
-//   const handleSelect = (prediction: any) => {
-//     setQuery(prediction.description);
-//     detailsServiceRef.current.getDetails(
-//       { placeId: prediction.place_id },
-//       (place: any, status: string) => {
-//         if (status !== "OK") return;
-//         console.log(place, "check selected place details");
-//         let city = "";
-//         let state = "";
-//         let state_code = "";
-//         let country = "";
-//         let country_code = "";
-//         place.address_components.forEach((comp: any) => {
-//           if (comp.types.includes("locality")) city = comp.long_name;
-//           if (comp.types.includes("administrative_area_level_1")) {
-//             state = comp.long_name;
-//             state_code = comp.short_name; // <-- This gives the state code (e.g., CA)
-//           }
-//           if (comp.types.includes("country")) {
-//             country = comp.long_name;
-//             country_code = comp.short_name; // <-- Country code (e.g., US)
-//           }
-//         });
-//         const result = {
-//           placeId: place.place_id,
-//           description: prediction.description,
-//           city,
-//           mapLocation: place?.url,
-//           state,
-//           state_code,
-//           country,
-//           country_code,
-//           formattedAddress: place.formatted_address,
-//           lat: place.geometry.location.lat(),
-//           lng: place.geometry.location.lng(),
-//         };
-//         onSelectPlace(result);
-//       },
-//     );
-//   };
-//   return (
-//     <div className="space-y-1">
-//       <input
-//         type="text"
-//         value={query}
-//         onChange={(e) => handleSearchChange(e.target.value)}
-//         placeholder={
-//           searchType === "city" ? "Search city..." : "Search state..."
-//         }
-//         className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary"
-//       />
-//       {loading && <p className="text-xs text-gray-500">Loading...</p>}
-//       {predictions.length > 0 && (
-//         <ul className="border border-gray-300 rounded-lg max-h-52 overflow-y-auto bg-white shadow-md">
-//           {predictions.map((pred) => (
-//             <li
-//               key={pred.place_id}
-//               onClick={() => handleSelect(pred)}
-//               className="px-3 py-2 cursor-pointer hover:bg-gray-100 flex justify-between"
-//             >
-//               <span>{pred.description}</span>
-//               <span className="text-xs text-gray-500">
-//                 {pred.types.includes("locality") ? "(City)" : "(State)"}
-//               </span>
-//             </li>
-//           ))}
-//         </ul>
-//       )}
-//     </div>
-//   );
-// };
-// export default React.memo(PlaceSearch);
+
+export default memo(PlaceSearch);

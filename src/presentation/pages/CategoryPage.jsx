@@ -6,21 +6,50 @@
 //   - Renders a 2/3-column PromotionVisualCard grid, with loading skeletons,
 //     error state, and an empty state.
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { MapPin, Store } from "lucide-react";
 
 import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 import PromotionDetailModal from "@/presentation/components/public/PromotionDetailModal";
-import { PromotionVisualCard } from "@/presentation/components/shared/PromotionVisualCard";
+import PromotionCard from "@/presentation/components/public/PromotionCard";
 import { usePromotionService } from "@/presentation/services/promotionService";
 import { categories } from "@/data/mockData";
 
-const slugToTitle = (slug) =>
-  String(slug || "")
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+// Defensively decode a slug up to twice so URLs like /category/coffee-%26-tea
+// (already once-encoded) and /category/coffee-%2526-tea (double-encoded by
+// older code) both land back on "coffee-&-tea" before we use it.
+function decodeSlug(slug) {
+  let v = String(slug || "");
+  for (let i = 0; i < 2; i++) {
+    try {
+      const next = decodeURIComponent(v);
+      if (next === v) break;
+      v = next;
+    } catch {
+      break;
+    }
+  }
+  return v;
+}
+
+// Render a slug like "coffee-&-tea" or "restaurants,food" as a human title:
+//   "Coffee & Tea"   "Restaurants, Food"
+function slugToTitle(slug) {
+  return String(slug || "")
+    .split(",")
+    .map((part) =>
+      part
+        .trim()
+        .split("-")
+        .filter(Boolean)
+        .map((word) => (word === "&" ? "&" : word.charAt(0).toUpperCase() + word.slice(1)))
+        .join(" ")
+        .replace(/\s+&\s+/g, " & "),
+    )
+    .filter(Boolean)
+    .join(", ");
+}
 
 const readStoredLocation = () => {
   if (typeof window === "undefined") return null;
@@ -40,38 +69,89 @@ export default function CategoryPage({ slug }) {
   const [selected, setSelected] = useState(null);
   const [open, setOpen] = useState(false);
 
-  const known = categories.find((c) => c.id === slug);
-  const displayName = known?.name || slugToTitle(slug);
+  // The CategoryStreet on the homepage links to multi-category URLs
+  // like /category/restaurants,food and /category/food,coffee-&-tea,
+  // restaurants. Decode the param (Turbopack / typed URLs sometimes hand
+  // it over still-encoded) and split on commas. We memoize so the title
+  // doesn't show "Coffee %26 Tea" before the effect has run.
+  const slugParts = useMemo(() => {
+    const decoded = decodeSlug(slug);
+    return decoded
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }, [slug]);
 
-  const fetchPromotions = useCallback(async () => {
-    if (!slug) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const location = readStoredLocation();
-      const res = await getPromotions({
-        category: slug,
-        state: location?.state_code,
-        city: location?.city,
-      });
-      const list = Array.isArray(res) ? res : res?.promotions || res?.data || [];
-      setPromotions(list);
-    } catch {
-      setError("Failed to load category promotions");
-    } finally {
-      setLoading(false);
+  // Pretty title. If exactly one slug AND it's in our known list, use the
+  // canonical display name; otherwise fall back to a humanized slug.
+  const displayName = useMemo(() => {
+    if (slugParts.length === 1) {
+      const single = slugParts[0];
+      const known = categories.find(
+        (c) =>
+          c.id === single ||
+          c.id.replace(/&/g, "and") === single.replace(/&/g, "and"),
+      );
+      if (known) return known.name;
     }
-  }, [slug, getPromotions]);
+    return slugToTitle(slugParts.join(","));
+  }, [slugParts]);
+
+  // usePromotionService rebuilds {getPromotions} on every render, so it's
+  // a fresh reference each time. If we use it directly in a useEffect
+  // dep array we'd loop forever. Stash the latest version in a ref and
+  // depend only on slug + the locationChanged event.
+  const getPromotionsRef = useRef(getPromotions);
+  useEffect(() => {
+    getPromotionsRef.current = getPromotions;
+  });
+
+  // Stable comma-joined string for the effect's dep array.
+  const slugQuery = slugParts.join(",");
 
   useEffect(() => {
+    if (!slugQuery) return;
+    let cancelled = false;
+
+    const fetchPromotions = async () => {
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
+      try {
+        const location = readStoredLocation();
+        // Pass the comma-joined slug list — the API splits it again on
+        // the server. Empty parts are filtered, so a single slug still
+        // serializes to just that slug.
+        const res = await getPromotionsRef.current({
+          category: slugQuery,
+          state: location?.state_code,
+          city: location?.city,
+        });
+        if (cancelled) return;
+        // promotionService.getPromotions returns the raw {response, error}
+        // shape from fetchData when given to call() without destructuring.
+        // Unwrap it before falling back to a plain-array response.
+        const payload = res?.response ?? res;
+        const list = Array.isArray(payload)
+          ? payload
+          : payload?.promotions || payload?.data || [];
+        setPromotions(list);
+      } catch {
+        if (!cancelled) setError("Failed to load category promotions");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
     fetchPromotions();
-  }, [fetchPromotions]);
-
-  useEffect(() => {
     const handler = () => fetchPromotions();
     window.addEventListener("locationChanged", handler);
-    return () => window.removeEventListener("locationChanged", handler);
-  }, [fetchPromotions]);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("locationChanged", handler);
+    };
+  }, [slugQuery]);
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -112,38 +192,16 @@ export default function CategoryPage({ slug }) {
               No promotions found for this category.
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {promotions.map((promotion) => (
-                <button
+                <PromotionCard
                   key={promotion.id}
-                  type="button"
+                  promotion={promotion}
                   onClick={() => {
                     setSelected(promotion);
                     setOpen(true);
                   }}
-                  className="text-left cursor-pointer space-y-2 group"
-                >
-                  <PromotionVisualCard
-                    imageUrl={promotion.imageUrl}
-                    backgroundColor={promotion.backgroundColor}
-                    text={promotion.text}
-                    showOverlay={false}
-                    className="aspect-[4/5]"
-                  />
-                  <div className="flex items-center gap-2 text-sm font-medium px-1">
-                    <Store className="h-4 w-4 text-primary shrink-0" />
-                    <span className="truncate">
-                      {promotion?.business?.name || "Local business"}
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2 text-xs text-muted-foreground px-1">
-                    <MapPin className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
-                    <span className="line-clamp-2">
-                      {promotion?.business?.businessAddress ||
-                        "Address not available"}
-                    </span>
-                  </div>
-                </button>
+                />
               ))}
             </div>
           )}
