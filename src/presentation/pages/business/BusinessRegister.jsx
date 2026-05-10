@@ -1,7 +1,6 @@
 "use client";
-import { Store } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Building2,
@@ -10,10 +9,9 @@ import {
   ArrowRight,
   Phone,
   Users,
-  Briefcase,
   Check,
-  ShoppingCart,
   Search,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/presentation/components/ui/button";
 import { Input } from "@/presentation/components/ui/input";
@@ -21,6 +19,7 @@ import { Label } from "@/presentation/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/presentation/components/ui/select";
@@ -29,36 +28,6 @@ import { useToast } from "@/presentation/hooks/use-toast";
 import { cn } from "@/presentation/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/presentation/hooks/use-redux";
 import { useAuthService } from "@/presentation/services/authService";
-const businessTypes = [
-  {
-    id: "small",
-    name: "Small Business",
-    icon: Users,
-    description: "Local shops, boutiques, solo entrepreneurs",
-    color: "from-emerald-500 to-teal-500",
-  },
-  {
-    id: "medium",
-    name: "Medium Size Business",
-    icon: Building2,
-    description: "Growing businesses with multiple locations",
-    color: "from-blue-500 to-indigo-500",
-  },
-  {
-    id: "large",
-    name: "Large Corporation",
-    icon: Briefcase,
-    description: "Enterprises with nationwide presence",
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    id: "online-ecommerce",
-    name: "Online Ecommerce Store",
-    icon: ShoppingCart,
-    description: "Online stores, digital marketplaces, dropshipping",
-    color: "from-orange-500 to-red-500",
-  },
-];
 const businessCategories = [
   "Restaurants",
   "Beauty & Spas",
@@ -86,7 +55,9 @@ const BusinessRegister = () => {
   const [businessName, setBusinessName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   const [personName, setPersonName] = useState("");
+  const [googleBusinessQuery, setGoogleBusinessQuery] = useState("");
   const [businessAddress, setBusinessAddress] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -96,11 +67,6 @@ const BusinessRegister = () => {
   const [isSelectOpen, setIsSelectOpen] = useState(false);
   const categoryInputRef = useRef(null);
   const navigate = useRouter();
-  // next/navigation returns the URLSearchParams instance directly (unlike
-  // react-router v6, which returned a tuple).
-  const searchParams = useSearchParams();
-  const typeFromParams = searchParams?.get("businessType") ?? null;
-  const [selectedType, setSelectedType] = useState(typeFromParams || null);
   const { toast } = useToast();
   const dispatch = useAppDispatch();
   const { isLoading, error } = useAppSelector((state) => state.auth);
@@ -160,7 +126,6 @@ const BusinessRegister = () => {
     if (
       !businessName ||
       !email ||
-      !phone ||
       !personName ||
       !businessAddress ||
       !password ||
@@ -169,14 +134,6 @@ const BusinessRegister = () => {
       toast({
         title: "Error",
         description: "Please fill in all fields",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!selectedType) {
-      toast({
-        title: "Error",
-        description: "Please select a business type",
         variant: "destructive",
       });
       return;
@@ -214,12 +171,12 @@ const BusinessRegister = () => {
       return;
     }
     try {
+      const fullPhone = phone.trim() ? `${phoneCountryCode} ${phone.trim()}` : "";
       const response = await registerBusiness(dispatch, {
         name: businessName,
         email,
         password,
-        phone,
-        businessType: selectedType || "",
+        phone: fullPhone,
         categories: selectedCategories,
         personName,
         businessAddress,
@@ -263,47 +220,6 @@ const BusinessRegister = () => {
           </p>
 
           <form onSubmit={handleRegister} className="space-y-5">
-            {/* Business Type Selection */}
-            <div className="space-y-3">
-              <Label className="text-base font-semibold">
-                Select Your Business Type
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                {businessTypes.map((type) => (
-                  <button
-                    key={type.id}
-                    type="button"
-                    onClick={() => setSelectedType(type.id)}
-                    className={cn(
-                      "relative flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all",
-                      selectedType === type.id
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50",
-                    )}
-                  >
-                    <div
-                      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${type.color} flex items-center justify-center`}
-                    >
-                      <type.icon className="h-6 w-6 text-white" />
-                    </div>
-                    <div className="text-center">
-                      <h3 className="font-semibold text-foreground text-sm">
-                        {type.name}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {type.description}
-                      </p>
-                    </div>
-                    {selectedType === type.id && (
-                      <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-primary flex items-center justify-center">
-                        <Check className="h-3 w-3 text-primary-foreground" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             {/* Business Category Selection - Select Dropdown (Max 2) */}
             <div className="space-y-2">
               <Label htmlFor="categories">
@@ -475,22 +391,44 @@ const BusinessRegister = () => {
               </div>
             </div>
 
-            {/* Business Location — matches the live site copy. Once we wire
-                up Google Places autocomplete, swap the Input for the search
-                widget; until then this stays as a manual text entry. */}
+            {/* Find your business on Google — TODO: wire to Google Places
+                Autocomplete once NEXT_PUBLIC_GOOGLE_MAPS_API_KEY is configured. */}
+            <div className="space-y-2">
+              <Label htmlFor="googleBusiness">Find your business on Google</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  id="googleBusiness"
+                  placeholder="Search business..."
+                  value={googleBusinessQuery}
+                  onChange={(e) => setGoogleBusinessQuery(e.target.value)}
+                  className="pl-10"
+                  disabled={isLoading}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Search and select your business to continue.
+              </p>
+            </div>
+
+            {/* Business Location — manual fallback when not listed on Google. */}
             <div className="space-y-2">
               <Label htmlFor="businessAddress">
                 Business Location (Type your business name here if not listed
                 on Google)
               </Label>
-              <Input
-                id="businessAddress"
-                placeholder="Enter your business location manually"
-                value={businessAddress}
-                onChange={(e) => setBusinessAddress(e.target.value)}
-                disabled={isLoading}
-                required
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                  id="businessAddress"
+                  placeholder="Enter your business location manually"
+                  value={businessAddress}
+                  onChange={(e) => setBusinessAddress(e.target.value)}
+                  className="pl-10"
+                  disabled={isLoading}
+                  required
+                />
+              </div>
               <p className="text-xs text-muted-foreground">
                 Use this if your business is not available in Google search.
               </p>
@@ -515,17 +453,36 @@ const BusinessRegister = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Phone (Optional)</Label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="phone"
-                    type="tel"
-                    placeholder="(555) 123-4567"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="pl-10"
+                <div className="flex gap-2">
+                  <Select
+                    value={phoneCountryCode}
+                    onValueChange={setPhoneCountryCode}
                     disabled={isLoading}
-                  />
+                  >
+                    <SelectTrigger className="w-22 shrink-0">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="+1">🇺🇸 +1</SelectItem>
+                      <SelectItem value="+44">🇬🇧 +44</SelectItem>
+                      <SelectItem value="+61">🇦🇺 +61</SelectItem>
+                      <SelectItem value="+63">🇵🇭 +63</SelectItem>
+                      <SelectItem value="+91">🇮🇳 +91</SelectItem>
+                      <SelectItem value="+81">🇯🇵 +81</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <div className="relative flex-1">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="(555) 123-4567"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="pl-10"
+                      disabled={isLoading}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -626,11 +583,11 @@ const BusinessRegister = () => {
 
           <div className="mt-12 grid grid-cols-3 gap-8 text-center">
             <div>
-              <div className="text-4xl font-bold">50K+</div>
+              <div className="text-4xl font-bold">5000+</div>
               <div className="text-sm opacity-70">Active Users</div>
             </div>
             <div>
-              <div className="text-4xl font-bold">10K+</div>
+              <div className="text-4xl font-bold">100&apos;s+</div>
               <div className="text-sm opacity-70">Businesses</div>
             </div>
             <div>

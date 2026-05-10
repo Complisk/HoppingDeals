@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -17,8 +17,18 @@ const BusinessLogin = () => {
   const navigate = useRouter();
   const { toast } = useToast();
   const dispatch = useAppDispatch();
-  const { isLoading, error } = useAppSelector((state) => state.auth);
+  const { isLoading, error, businessToken, business, hydrated } =
+    useAppSelector((state) => state.auth);
   const { loginBusiness } = useAuthService();
+
+  // Already-logged-in bounce. Wait for hydration so we don't redirect
+  // based on the SSR-empty initial state.
+  useEffect(() => {
+    if (hydrated && businessToken && business) {
+      navigate.replace("/business/dashboard");
+    }
+  }, [hydrated, businessToken, business, navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -32,6 +42,10 @@ const BusinessLogin = () => {
     try {
       const response = await loginBusiness(dispatch, { email, password });
       if (response && response.business && response.token) {
+        // Hard navigation: lets the protected layout remount with fresh
+        // cookies + Redux state. Soft router.push() races the layout's
+        // hydration check and bounces back to /business/login.
+        window.location.assign("/business/dashboard");
       }
     } catch (err) {
       console.error("Login failed:", err);

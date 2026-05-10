@@ -19,14 +19,19 @@ const AdminLogin = () => {
   const navigate = useRouter();
   const { toast } = useToast();
   const { adminLogin } = useAdminAuthService();
-  const { adminToken, adminUser } = useAppSelector((state) => state.auth);
-  // If already logged in, redirect to dashboard
+  const { adminToken, adminUser, hydrated } = useAppSelector(
+    (state) => state.auth,
+  );
+
+  // If we land here already authenticated (e.g. user clicked back-button
+  // after logging in), bounce to the dashboard. Wait for hydration so we
+  // don't redirect based on the SSR-empty initial state.
   useEffect(() => {
-    if (adminToken && adminUser) {
-      console.log("Already logged in, redirecting to dashboard");
-      navigate.push("/admin/dashboard");
+    if (hydrated && adminToken && adminUser) {
+      navigate.replace("/admin/dashboard");
     }
-  }, [adminToken, adminUser, navigate]);
+  }, [hydrated, adminToken, adminUser, navigate]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!email || !password) {
@@ -39,17 +44,13 @@ const AdminLogin = () => {
     }
     try {
       setLoading(true);
-      console.log("Starting login...");
       const result = await adminLogin(email, password);
-      console.log("Login result:", result);
       if (result) {
-        console.log("Login successful, checking Redux state before navigate");
-        // Give Redux a moment to update
-        setTimeout(() => {
-          navigate.push("/admin/dashboard");
-        }, 300);
-      } else {
-        console.error("Login returned null");
+        // Hard navigation guarantees the protected layout remounts with
+        // fresh cookies + Redux state and any client-side caches reset.
+        // router.push() + a soft transition was racing the AdminLayout's
+        // hydration check and bouncing us back to /admin/login.
+        window.location.assign("/admin/dashboard");
       }
     } finally {
       setLoading(false);

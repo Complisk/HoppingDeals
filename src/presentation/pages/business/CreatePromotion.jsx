@@ -59,7 +59,7 @@ const CreatePromotion = ({ isVisitor = false }) => {
   const [textPosition, setTextPosition] = useState({ x: 50, y: 50 });
   const [fontSize, setFontSize] = useState("24");
   const [textColor, setTextColor] = useState("#ffffff");
-  const [backgroundColor, setBackgroundColor] = useState(null);
+  const [backgroundColor, setBackgroundColor] = useState(0);
   const [showOverlay, setShowOverlay] = useState(true);
   // Location State
   const [selectedCities, setSelectedCities] = useState([]);
