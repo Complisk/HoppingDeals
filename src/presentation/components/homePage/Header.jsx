@@ -25,6 +25,7 @@ import {
   User,
   LayoutDashboard,
   LogOut,
+  ChevronRight,
 } from "lucide-react";
 import { logout as userLogout } from "@/presentation/store/authSlice";
 import Logo from "../shared/Logo";
@@ -33,16 +34,40 @@ import { cn } from "@/presentation/lib/utils";
 
 const PRIMARY = "#E31E24";
 
-const PUBLIC_ITEMS = [
+// Top-level menu items that aren't the Categories submenu. Categories
+// is rendered inline below because it needs DropdownMenu.Sub semantics.
+const PUBLIC_ITEMS_BEFORE_CATEGORIES = [
   { label: "About Us", href: "/about-us", Icon: Info },
   { label: "Blog", href: "/blog", Icon: BookOpen },
   { label: "Photo Gallery", href: "/photos", Icon: ImageIcon },
-  { label: "Categories", href: "/categories", Icon: Grid },
+];
+const PUBLIC_ITEMS_AFTER_CATEGORIES = [
   {
     label: "Complisk Business Directory",
     href: "/complisk-business-directory",
     Icon: Building2,
   },
+];
+
+// Category list mirrors the live complisk.com menu. Each entry links to
+// /category/<slug> — slugs match the keys our PromotionFeed uses.
+const CATEGORIES = [
+  { label: "Restaurants", slug: "restaurants" },
+  { label: "Beauty & Spas", slug: "beauty-spas" },
+  { label: "Home Services", slug: "home-services" },
+  { label: "Coffee & Tea", slug: "coffee-tea" },
+  { label: "Food", slug: "food" },
+  { label: "Auto Services", slug: "auto-services" },
+  { label: "Pets", slug: "pets" },
+  { label: "Professional Services", slug: "professional-services" },
+  { label: "Health & Medical", slug: "health-medical" },
+  { label: "Event Planning & Services", slug: "event-planning-services" },
+  { label: "Hotels & Casinos", slug: "hotels-casinos" },
+  { label: "Nightlife", slug: "nightlife" },
+  { label: "Active Life", slug: "active-life" },
+  { label: "Education", slug: "education" },
+  { label: "Arts & Entertainment", slug: "arts-entertainment" },
+  { label: "Travel & Activities", slug: "travel-activities" },
 ];
 
 export default function Header() {
@@ -62,7 +87,7 @@ export default function Header() {
     <>
       <header className="py-3 px-4 z-40 sm:px-8 border-b border-gray-100 fixed top-0 left-0 right-0 bg-white">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Logo />
+          <Logo size="xl" />
 
           <div className="flex items-center gap-3 sm:gap-6">
             <Link href="/business/visitor" className="hidden sm:inline-flex">
@@ -104,7 +129,66 @@ export default function Header() {
                       <DropdownMenu.Separator className="my-2 h-px bg-gray-200" />
                     </div>
 
-                    {PUBLIC_ITEMS.map((item) => (
+                    {PUBLIC_ITEMS_BEFORE_CATEGORIES.map((item) => (
+                      <MenuItem
+                        key={item.href}
+                        href={item.href}
+                        Icon={item.Icon}
+                        label={item.label}
+                        active={
+                          pathname === item.href ||
+                          pathname?.startsWith(`${item.href}/`)
+                        }
+                      />
+                    ))}
+
+                    <DropdownMenu.Sub>
+                      <DropdownMenu.SubTrigger
+                        className={cn(
+                          "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-sm font-medium transition outline-none data-[state=open]:bg-red-50 data-[state=open]:text-[#E31E24]",
+                          pathname?.startsWith("/category/") ||
+                            pathname === "/categories"
+                            ? "bg-red-50 text-[#E31E24]"
+                            : "text-gray-700 hover:bg-red-50 hover:text-[#E31E24]",
+                        )}
+                      >
+                        <span className="text-[#E31E24]">
+                          <Grid className="h-5 w-5" />
+                        </span>
+                        <span className="flex-1">Categories</span>
+                        <ChevronRight className="h-4 w-4 text-gray-400" />
+                      </DropdownMenu.SubTrigger>
+
+                      <DropdownMenu.Portal>
+                        <DropdownMenu.SubContent
+                          sideOffset={8}
+                          alignOffset={-4}
+                          className="w-64 max-h-[60vh] overflow-y-auto rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl border border-gray-200 z-50 p-2"
+                        >
+                          {CATEGORIES.map((cat) => {
+                            const href = `/category/${cat.slug}`;
+                            const active = pathname === href;
+                            return (
+                              <DropdownMenu.Item asChild key={cat.slug}>
+                                <Link
+                                  href={href}
+                                  className={cn(
+                                    "block px-4 py-2.5 rounded-lg text-sm font-medium transition outline-none cursor-pointer",
+                                    active
+                                      ? "bg-red-50 text-[#E31E24]"
+                                      : "text-gray-700 hover:bg-red-50 hover:text-[#E31E24]",
+                                  )}
+                                >
+                                  {cat.label}
+                                </Link>
+                              </DropdownMenu.Item>
+                            );
+                          })}
+                        </DropdownMenu.SubContent>
+                      </DropdownMenu.Portal>
+                    </DropdownMenu.Sub>
+
+                    {PUBLIC_ITEMS_AFTER_CATEGORIES.map((item) => (
                       <MenuItem
                         key={item.href}
                         href={item.href}

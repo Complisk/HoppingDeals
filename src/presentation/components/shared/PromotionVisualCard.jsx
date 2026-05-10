@@ -22,7 +22,7 @@ export const PromotionVisualCard = ({
       {/* Image Layer */}
       {imageUrl && (
         <div
-          className="w-full h-full"
+          className="relative w-full h-full"
           style={{
             filter:
               backgroundColor === 50

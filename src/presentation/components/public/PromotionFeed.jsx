@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { usePromotionService } from "@/presentation/services/promotionService";
 import PromotionDetailModal from "./PromotionDetailModal";
-import { PromotionVisualCard } from "../shared/PromotionVisualCard";
-import { MapPin, Store } from "lucide-react";
+import PromotionCard from "./PromotionCard";
 const PromotionFeed = ({ selectedCategory }) => {
   const dispatch = useDispatch();
   const { getFeaturedPromotions } = usePromotionService();
@@ -50,48 +49,25 @@ const PromotionFeed = ({ selectedCategory }) => {
           </div>
 
           {featuredLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="h-80 bg-gray-200 animate-pulse rounded-lg"
+                  className="aspect-4/3 bg-gray-200 animate-pulse rounded-lg"
                 />
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPromotions.map((promotion) => (
-                <div
+                <PromotionCard
                   key={promotion.id}
+                  promotion={promotion}
                   onClick={() => {
                     setSelectedPromotion(promotion);
                     setOpen(true);
                   }}
-                  className="cursor-pointer space-y-3"
-                >
-                  {/* Promotion Image */}
-                  <PromotionVisualCard
-                    imageUrl={promotion.imageUrl}
-                    backgroundColor={promotion.backgroundColor}
-                    text={promotion.text}
-                    showOverlay={false}
-                  />
-
-                  {/* Business Name */}
-                  <div className="flex items-center gap-2 text-sm font-medium">
-                    <Store className="h-4 w-4 text-primary" />
-                    <span>{promotion?.business?.name}</span>
-                  </div>
-
-                  {/* Address */}
-                  <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                    <MapPin className="h-4 w-4 mt-0.5 text-primary" />
-                    <span>
-                      {promotion?.business?.businessAddress ||
-                        "Address not available"}
-                    </span>
-                  </div>
-                </div>
+                />
               ))}
             </div>
           )}

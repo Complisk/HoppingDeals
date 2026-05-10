@@ -7,6 +7,7 @@ const sizeMap = {
   sm: { className: "h-6 w-auto", width: 122, height: 60 },
   md: { className: "h-8 w-auto", width: 162, height: 80 },
   lg: { className: "h-10 w-auto", width: 203, height: 100 },
+  xl: { className: "h-12 w-auto", width: 244, height: 120 },
 };
 
 const Logo = ({ size = "md", className = "" }) => {

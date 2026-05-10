@@ -1,9 +1,10 @@
 "use client";
 
 // BusinessHeader — used on /business/visitor (and similar marketing pages).
-// Mirrors the live complisk.com layout: a 3-column header with the logo on
-// the left, the business name centred (when logged in), and a Login or
-// Business Dashboard button + hamburger menu on the right.
+// Mirrors the live complisk.com layout: a simple two-end header with the
+// logo on the left and a Login or Business Dashboard button + hamburger
+// menu on the right. When logged in, the business name appears as a
+// subtle line under the logo (rather than competing for centre space).
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
@@ -36,26 +37,21 @@ export default function BusinessHeader() {
 
   return (
     <header className="z-50 border-b border-gray-100 bg-white px-3 py-3 sm:px-6 sm:py-4">
-      <div className="mx-auto grid max-w-7xl grid-cols-[auto,minmax(0,1fr),auto] items-center gap-2 sm:gap-4">
-        <div className="shrink-0">
-          <Logo />
-        </div>
-
-        <div className="min-w-0 px-1 text-center sm:px-2">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-2 sm:gap-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <Logo size ="xl"/>
           {isBusinessLoggedIn && business ? (
             <Link
               href="/business/profile"
-              className="block hover:underline"
+              className="hidden truncate text-sm font-medium text-gray-700 hover:underline sm:block"
               title={business.name}
             >
-              <h1 className="truncate text-sm font-bold text-gray-800 sm:text-xl lg:text-2xl">
-                {business.name}
-              </h1>
+              {business.name}
             </Link>
           ) : null}
         </div>
 
-        <div className="flex items-center justify-end gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {!isBusinessLoggedIn ? (
             <Link href="/business/login">
               <button
