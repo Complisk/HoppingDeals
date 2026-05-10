@@ -4,12 +4,17 @@ export class Business {
     name,
     email,
     password,
-    phone,
+    phone = null,
+    logoUrl = null,
     businessType = "small",
     categories = [],
     personName = null,
     businessAddress = null,
+    placeId = null,
+    lat = null,
+    lng = null,
     state = null,
+    timezone = "UTC",
     autoApprovePromotions = false,
     status = "active",
     subscriptionStatus = "none",
@@ -17,6 +22,9 @@ export class Business {
     subscriptionEnd = null,
     stripeSubscriptionId = null,
     stripeCustomerId = null,
+    coordinates = null,
+    resetPasswordToken = null,
+    resetPasswordExpires = null,
     createdAt,
     updatedAt,
   }) {
@@ -25,11 +33,16 @@ export class Business {
     this.email = email;
     this.password = password;
     this.phone = phone;
+    this.logoUrl = logoUrl;
     this.businessType = businessType;
     this.categories = categories;
     this.personName = personName;
     this.businessAddress = businessAddress;
+    this.placeId = placeId;
+    this.lat = lat;
+    this.lng = lng;
     this.state = state;
+    this.timezone = timezone;
     this.autoApprovePromotions = autoApprovePromotions;
     this.status = status;
     this.subscriptionStatus = subscriptionStatus;
@@ -37,12 +50,15 @@ export class Business {
     this.subscriptionEnd = subscriptionEnd;
     this.stripeSubscriptionId = stripeSubscriptionId;
     this.stripeCustomerId = stripeCustomerId;
+    this.coordinates = coordinates;
+    this.resetPasswordToken = resetPasswordToken;
+    this.resetPasswordExpires = resetPasswordExpires;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
 
   isOnlineStore() {
-    return this.businessType === "online-ecommerce";
+    return this.businessType === "online-ecommerce" || this.businessType === "online_ecommerce";
   }
 
   hasActiveSubscriptionWindow(now = new Date()) {
@@ -55,7 +71,12 @@ export class Business {
   }
 
   toPublicJSON() {
-    const { password: _password, ...rest } = this;
+    const {
+      password: _password,
+      resetPasswordToken: _t,
+      resetPasswordExpires: _e,
+      ...rest
+    } = this;
     return rest;
   }
 }

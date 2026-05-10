@@ -8,7 +8,11 @@ export class User {
     roleId = null,
     accountType = "user",
     isSuperAdmin = false,
+    avatarUrl = null,
     status = "active",
+    timezone = "UTC",
+    resetPasswordToken = null,
+    resetPasswordExpires = null,
     createdAt,
     updatedAt,
     role = null,
@@ -21,7 +25,11 @@ export class User {
     this.roleId = roleId;
     this.accountType = accountType;
     this.isSuperAdmin = isSuperAdmin;
+    this.avatarUrl = avatarUrl;
     this.status = status;
+    this.timezone = timezone;
+    this.resetPasswordToken = resetPasswordToken;
+    this.resetPasswordExpires = resetPasswordExpires;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
     this.role = role;
@@ -39,7 +47,7 @@ export class User {
   }
 
   toPublicJSON() {
-    const { password: _password, ...rest } = this;
+    const { password: _password, resetPasswordToken: _t, resetPasswordExpires: _e, ...rest } = this;
     return rest;
   }
 }

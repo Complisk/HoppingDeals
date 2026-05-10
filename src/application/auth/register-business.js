@@ -19,7 +19,6 @@ export class RegisterBusinessUseCase {
       password,
       phone,
       categories,
-      businessType,
       personName,
       businessAddress,
     } = input;
@@ -39,7 +38,7 @@ export class RegisterBusinessUseCase {
       password: passwordHash,
       phone,
       categories,
-      businessType: businessType || "small",
+      businessType: "small",
       personName: personName || null,
       businessAddress: businessAddress || null,
       autoApprovePromotions: false,

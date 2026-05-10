@@ -3,18 +3,24 @@ import { ValidationError, ForbiddenError } from "../errors/index.js";
 export class Promotion {
   constructor({
     id,
-    businessId,
+    businessId = null,
     templateId = null,
     imageUrl,
     text = [],
     backgroundColor = "",
-    category = null,
+    categories = [],
     cities = [],
     states = [],
     runDate,
     stopDate,
-    runTime,
-    stopTime,
+    runTime = null,
+    stopTime = null,
+    scheduleEnabled = false,
+    scheduleTimezone = "UTC",
+    scheduleStartAt = null,
+    scheduleEndAt = null,
+    activationJobId = null,
+    expirationJobId = null,
     calculatedMonths = 1,
     timezones = [],
     price,
@@ -22,6 +28,7 @@ export class Promotion {
     autoApprove = false,
     approvedAt = null,
     paymentStatus = "pending",
+    metadata = null,
     views = 0,
     clicks = 0,
     stripePaymentId = null,
@@ -36,13 +43,19 @@ export class Promotion {
     this.imageUrl = imageUrl;
     this.text = text;
     this.backgroundColor = backgroundColor;
-    this.category = category;
+    this.categories = Array.isArray(categories) ? categories : [];
     this.cities = cities;
     this.states = states;
     this.runDate = runDate;
     this.stopDate = stopDate;
     this.runTime = runTime;
     this.stopTime = stopTime;
+    this.scheduleEnabled = scheduleEnabled;
+    this.scheduleTimezone = scheduleTimezone;
+    this.scheduleStartAt = scheduleStartAt;
+    this.scheduleEndAt = scheduleEndAt;
+    this.activationJobId = activationJobId;
+    this.expirationJobId = expirationJobId;
     this.calculatedMonths = calculatedMonths;
     this.timezones = timezones;
     this.price = price;
@@ -50,6 +63,7 @@ export class Promotion {
     this.autoApprove = autoApprove;
     this.approvedAt = approvedAt;
     this.paymentStatus = paymentStatus;
+    this.metadata = metadata;
     this.views = views;
     this.clicks = clicks;
     this.stripePaymentId = stripePaymentId;
@@ -57,6 +71,11 @@ export class Promotion {
     this.updatedAt = updatedAt;
     this.business = business;
     this.template = template;
+  }
+
+  // Backwards-compat shim — older UI code reads `promotion.category` (singular).
+  get category() {
+    return this.categories?.[0] ?? null;
   }
 
   approve() {

@@ -8,6 +8,7 @@ export const promotionCreateSchema = z.object({
   text: z.any().optional(),
   backgroundColor: z.string().optional(),
   category: z.string().optional().nullable(),
+  categories: z.array(z.string()).optional(),
   cities: z.array(z.any()).optional().default([]),
   states: z.array(z.any()).optional().default([]),
   timezones: z.array(z.string()).optional().default([]),

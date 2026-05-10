@@ -6,15 +6,15 @@
 
 import "server-only";
 
-import { prisma } from "./db/prisma.js";
+import { createAdminClient } from "../utils/supabase/server.js";
 
-import { PrismaUserRepository } from "./db/repositories/prisma-user-repository.js";
-import { PrismaBusinessRepository } from "./db/repositories/prisma-business-repository.js";
-import { PrismaRoleRepository } from "./db/repositories/prisma-role-repository.js";
-import { PrismaTemplateRepository } from "./db/repositories/prisma-template-repository.js";
-import { PrismaPromotionRepository } from "./db/repositories/prisma-promotion-repository.js";
-import { PrismaSubscriptionTemplateRepository } from "./db/repositories/prisma-subscription-template-repository.js";
-import { PrismaBusinessSubscriptionRepository } from "./db/repositories/prisma-business-subscription-repository.js";
+import { SupabaseUserRepository } from "./db/repositories/supabase-user-repository.js";
+import { SupabaseBusinessRepository } from "./db/repositories/supabase-business-repository.js";
+import { SupabaseRoleRepository } from "./db/repositories/supabase-role-repository.js";
+import { SupabaseTemplateRepository } from "./db/repositories/supabase-template-repository.js";
+import { SupabasePromotionRepository } from "./db/repositories/supabase-promotion-repository.js";
+import { SupabaseSubscriptionTemplateRepository } from "./db/repositories/supabase-subscription-template-repository.js";
+import { SupabaseBusinessSubscriptionRepository } from "./db/repositories/supabase-business-subscription-repository.js";
 
 import { BcryptPasswordHasher } from "./auth/bcrypt-password-hasher.js";
 import { JwtTokenService } from "./auth/jwt-token-service.js";
@@ -104,15 +104,18 @@ const memo = (key, factory) => {
 };
 
 // ── Repositories ─────────────────────────────────────────────────────────────
-const userRepo = () => memo("userRepo", () => new PrismaUserRepository({ prisma }));
-const businessRepo = () => memo("businessRepo", () => new PrismaBusinessRepository({ prisma }));
-const roleRepo = () => memo("roleRepo", () => new PrismaRoleRepository({ prisma }));
-const templateRepo = () => memo("templateRepo", () => new PrismaTemplateRepository({ prisma }));
-const promotionRepo = () => memo("promotionRepo", () => new PrismaPromotionRepository({ prisma }));
+// All repos use the service-role Supabase client server-side (bypasses RLS).
+// The admin client is a cached singleton inside utils/supabase/server.js.
+const supabase = () => memo("supabase", () => createAdminClient());
+const userRepo = () => memo("userRepo", () => new SupabaseUserRepository({ supabase: supabase() }));
+const businessRepo = () => memo("businessRepo", () => new SupabaseBusinessRepository({ supabase: supabase() }));
+const roleRepo = () => memo("roleRepo", () => new SupabaseRoleRepository({ supabase: supabase() }));
+const templateRepo = () => memo("templateRepo", () => new SupabaseTemplateRepository({ supabase: supabase() }));
+const promotionRepo = () => memo("promotionRepo", () => new SupabasePromotionRepository({ supabase: supabase() }));
 const subscriptionTemplateRepo = () =>
-  memo("subscriptionTemplateRepo", () => new PrismaSubscriptionTemplateRepository({ prisma }));
+  memo("subscriptionTemplateRepo", () => new SupabaseSubscriptionTemplateRepository({ supabase: supabase() }));
 const subscriptionRepo = () =>
-  memo("subscriptionRepo", () => new PrismaBusinessSubscriptionRepository({ prisma }));
+  memo("subscriptionRepo", () => new SupabaseBusinessSubscriptionRepository({ supabase: supabase() }));
 
 // ── Adapters ─────────────────────────────────────────────────────────────────
 const hasher = () => memo("hasher", () => new BcryptPasswordHasher());

@@ -40,6 +40,7 @@ export class CreatePromotionUseCase {
       text,
       backgroundColor,
       category,
+      categories,
       cities = [],
       states = [],
       timezones = [],
@@ -48,6 +49,16 @@ export class CreatePromotionUseCase {
       runTime,
       stopTime,
     } = input;
+
+    // Accept either `category` (legacy) or `categories[]` from callers, then
+    // collapse into the array shape that Supabase's Promotions table expects.
+    const resolvedCategories = Array.isArray(categories) && categories.length > 0
+      ? categories
+      : category
+        ? [category]
+        : business.categories?.length
+          ? [business.categories[0]]
+          : [];
 
     const subStart = new Date(subscription.startDate);
     const subEnd = new Date(subscription.endDate);
@@ -75,7 +86,7 @@ export class CreatePromotionUseCase {
       imageUrl,
       text: Array.isArray(text) ? text : text ? [text] : [],
       backgroundColor: backgroundColor || "",
-      category: category || (business.categories?.[0] ?? null),
+      categories: resolvedCategories,
       cities,
       states,
       timezones,
