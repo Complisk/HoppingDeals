@@ -43,9 +43,9 @@ export const metadata = {
     siteName: "Complisk",
     images: [
       {
-        url: "/logo-512.png",
-        width: 512,
-        height: 512,
+        url: "/complisk-logo.png",
+        width: 583,
+        height: 287,
         alt: "Complisk local business promotions platform",
       },
     ],
@@ -55,22 +55,13 @@ export const metadata = {
     title: "Complisk | Local business promotions and deals",
     description:
       "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
-    images: ["/logo-512.png"],
+    images: ["/complisk-logo.png"],
   },
   icons: {
-    // Multiple sizes so the browser can pick the sharpest one for the
-    // tab / bookmark / device. Production complisk.com uses these same
-    // assets — they live in /public.
-    icon: [
-      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
-      { url: "/logo-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    shortcut: "/favicon-32x32.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/complisk-logo.png",
+    shortcut: "/complisk-logo.png",
+    apple: "/complisk-logo.png",
   },
-  manifest: "/manifest.json",
   robots: { index: true, follow: true },
 };
 
