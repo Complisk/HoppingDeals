@@ -12,6 +12,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   Calendar,
   Clock,
+  FileText,
   Globe,
   Heart,
   MapPin,
@@ -99,10 +100,9 @@ const PromotionDetailModal = ({ open, onOpenChange, promotion }) => {
         <Dialog.Content
           className="
             fixed left-1/2 top-1/2 z-50
+            w-[90vw] md:h-[90vh] h-[90vh] md:w-[30vw]
             -translate-x-1/2 -translate-y-1/2
-            w-[92vw] max-w-2xl max-h-[92vh]
-            bg-background shadow-2xl rounded-lg
-            overflow-hidden flex flex-col
+            bg-background shadow-xl overflow-hidden
           "
           aria-describedby={undefined}
         >
@@ -110,86 +110,85 @@ const PromotionDetailModal = ({ open, onOpenChange, promotion }) => {
             {businessName} promotion details
           </Dialog.Title>
 
-          {/* Hero image with overlay buttons */}
-          <div className="relative shrink-0">
+          {/* Image Section — top 50% */}
+          <div className="relative h-[50%]">
             <PromotionVisualCard
               imageUrl={promotion.imageUrl}
               backgroundColor={promotion.backgroundColor}
               text={promotion.text}
-              className="aspect-4/3 w-full rounded-none border-0"
+              modal
+              className="h-full rounded-none border-0 bg-slate-700"
             />
 
-            {/* Save (wishlist) — top-left, pill style with heart */}
+            {/* Close */}
+            <button
+              type="button"
+              onClick={() => onOpenChange(false)}
+              aria-label="Close"
+              className="absolute top-3 right-3 z-40 rounded-full bg-white/90 p-2 hover:bg-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+
+            {/* Wishlist */}
             <button
               type="button"
               onClick={onSave}
               disabled={saving}
               aria-label="Save promotion"
-              className="absolute top-3 left-3 z-40 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-medium text-gray-800 shadow hover:bg-white"
+              className={`absolute top-3 left-3 z-40 flex items-center gap-1 rounded-full p-2 px-3 text-sm font-medium transition-colors ${
+                saved
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-white text-gray-800 hover:bg-gray-100"
+              }`}
             >
-              <Heart
-                className={`h-4 w-4 ${saved ? "fill-primary text-primary" : ""}`}
-              />
-              {saved ? "Saved" : "Save"}
-            </button>
-
-            {/* Close button — top-right */}
-            <button
-              type="button"
-              onClick={() => onOpenChange(false)}
-              aria-label="Close"
-              className="absolute top-3 right-3 z-40 rounded-full bg-white/95 p-2 hover:bg-white"
-            >
-              <X className="h-4 w-4" />
+              <Heart className={`h-4 w-4 ${saved ? "fill-white" : ""}`} />
+              {saved ? "Remove" : "Save"}
             </button>
           </div>
 
-          {/* Details */}
-          <div className="p-5 space-y-4 overflow-y-auto">
-            <h2 className="text-xl font-semibold leading-tight">
-              {businessName}
-            </h2>
+          {/* Details Section — bottom 50%, scrollable */}
+          <div className="p-5 space-y-4 overflow-y-auto h-[50%]">
+            <h2 className="text-lg font-semibold">{businessName}</h2>
 
-            <div className="flex items-start gap-2 text-sm">
-              <MapPin className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-              <span>{address}</span>
+            {/* Address */}
+            <div className="flex gap-2 text-sm text-muted-foreground">
+              <MapPin className="h-4 w-4 mt-0.5 text-primary" />
+              {address}
             </div>
 
-            {dateRange && (
-              <div className="flex items-start gap-2 text-sm">
-                <Calendar className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                <span>
-                  <strong>Date:</strong> {dateRange}
-                </span>
-              </div>
-            )}
+            {/* Date Range */}
+            <div className="flex items-center gap-2 text-sm">
+              <Calendar className="h-4 w-4 text-primary" />
+              <span>
+                <strong>Date :</strong> {dateRange || "Not available"}
+              </span>
+            </div>
 
-            {timeRange && (
-              <div className="flex items-start gap-2 text-sm">
-                <Clock className="h-4 w-4 mt-0.5 text-primary shrink-0" />
-                <span>
-                  <strong>Time:</strong> {timeRange}
-                </span>
-              </div>
-            )}
+            {/* Time Range */}
+            <div className="flex items-center gap-2 text-sm">
+              <Clock className="h-4 w-4 text-primary" />
+              <span>
+                <strong>Time :</strong> {timeRange || "Not available"}
+              </span>
+            </div>
 
-            {description && (
-              <div className="flex items-start gap-2 text-sm">
-                <span className="text-primary shrink-0 mt-0.5">📝</span>
-                <p className="whitespace-pre-line leading-relaxed">
-                  {description}
-                </p>
-              </div>
-            )}
+            {/* Description */}
+            <div className="flex items-start w-full gap-2 text-xs">
+              <FileText size={15} className="text-primary mt-0.5" />
+              <span className="w-[90%] whitespace-pre-wrap break-words">
+                {description || "No description"}
+              </span>
+            </div>
 
             {websiteUrl && (
               <a
                 href={websiteUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-primary/30 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5"
+                className="mt-3 inline-flex w-fit items-center gap-2 rounded-md border border-border bg-secondary/50 px-3 py-2 text-sm font-medium text-foreground hover:bg-secondary"
               >
-                <Globe className="h-4 w-4" />
+                <Globe className="h-4 w-4 text-primary" />
                 Website Link
               </a>
             )}

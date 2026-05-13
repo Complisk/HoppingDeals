@@ -10,11 +10,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 
 import Header from "@/presentation/components/homePage/Header";
-import Footer from "@/presentation/components/homePage/Footer";
 import PromotionDetailModal from "@/presentation/components/public/PromotionDetailModal";
 import PromotionCard from "@/presentation/components/public/PromotionCard";
 import { usePromotionService } from "@/presentation/services/promotionService";
-import { categories } from "@/data/mockData";
 
 // Defensively decode a slug up to twice so URLs like /category/coffee-%26-tea
 // (already once-encoded) and /category/coffee-%2526-tea (double-encoded by
@@ -31,24 +29,6 @@ function decodeSlug(slug) {
     }
   }
   return v;
-}
-
-// Render a slug like "coffee-&-tea" or "restaurants,food" as a human title:
-//   "Coffee & Tea"   "Restaurants, Food"
-function slugToTitle(slug) {
-  return String(slug || "")
-    .split(",")
-    .map((part) =>
-      part
-        .trim()
-        .split("-")
-        .filter(Boolean)
-        .map((word) => (word === "&" ? "&" : word.charAt(0).toUpperCase() + word.slice(1)))
-        .join(" ")
-        .replace(/\s+&\s+/g, " & "),
-    )
-    .filter(Boolean)
-    .join(", ");
 }
 
 const readStoredLocation = () => {
@@ -81,21 +61,6 @@ export default function CategoryPage({ slug }) {
       .map((s) => s.trim())
       .filter(Boolean);
   }, [slug]);
-
-  // Pretty title. If exactly one slug AND it's in our known list, use the
-  // canonical display name; otherwise fall back to a humanized slug.
-  const displayName = useMemo(() => {
-    if (slugParts.length === 1) {
-      const single = slugParts[0];
-      const known = categories.find(
-        (c) =>
-          c.id === single ||
-          c.id.replace(/&/g, "and") === single.replace(/&/g, "and"),
-      );
-      if (known) return known.name;
-    }
-    return slugToTitle(slugParts.join(","));
-  }, [slugParts]);
 
   // usePromotionService rebuilds {getPromotions} on every render, so it's
   // a fresh reference each time. If we use it directly in a useEffect
@@ -154,66 +119,54 @@ export default function CategoryPage({ slug }) {
   }, [slugQuery]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <>
       <Header />
-      <main className="flex-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-                {displayName} Promotions
-              </h1>
-              <p className="text-muted-foreground mt-1 text-sm">
-                {loading
-                  ? "Loading deals near you…"
-                  : `${promotions.length} active deal${promotions.length === 1 ? "" : "s"} near you`}
-              </p>
-            </div>
-            <Link href="/" className="underline text-sm text-primary">
+      <div className=" p-3 sm:p-8 ">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <Link href="/" className="underline text-sm">
               Back Home
             </Link>
           </div>
-
-          {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-2">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-72 bg-gray-200 animate-pulse rounded-lg"
-                />
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center text-muted-foreground py-12">
-              {error}
-            </div>
-          ) : promotions.length === 0 ? (
-            <div className="text-center text-muted-foreground py-12">
-              No promotions found for this category.
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {promotions.map((promotion) => (
-                <PromotionCard
-                  key={promotion.id}
-                  promotion={promotion}
-                  onClick={() => {
-                    setSelected(promotion);
-                    setOpen(true);
-                  }}
-                />
-              ))}
-            </div>
-          )}
         </div>
-      </main>
-      <Footer />
+
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-80 bg-gray-200 animate-pulse rounded-lg"
+              />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center text-muted-foreground py-12">{error}</div>
+        ) : promotions.length === 0 ? (
+          <div className="text-center text-muted-foreground py-12">
+            No promotions found for this category.
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-1 md:gap-2">
+            {promotions.map((promotion) => (
+              <PromotionCard
+                key={promotion.id}
+                promotion={promotion}
+                disableModal
+                onCardClick={(p) => {
+                  setSelected(p);
+                  setOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       <PromotionDetailModal
         open={open}
         onOpenChange={setOpen}
         promotion={selected}
       />
-    </div>
+    </>
   );
 }

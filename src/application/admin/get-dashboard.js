@@ -36,7 +36,16 @@ export class GetAdminDashboardUseCase {
           : 0,
       },
       recentActivity: {
-        users: recentUsers.map((u) => u.toPublicJSON()),
+        users: recentUsers.map((u) => ({
+          id: u.id,
+          fullName: u.fullName,
+          email: u.email,
+          role: u.isSuperAdmin
+            ? "Super Admin"
+            : u.role?.name || u.accountType || "user",
+          status: u.status,
+          createdAt: u.createdAt,
+        })),
         promotions: recentPromotions,
       },
     };

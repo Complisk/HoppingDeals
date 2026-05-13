@@ -349,7 +349,7 @@ export default function CategoryStreet() {
           }}
           role="link"
           tabIndex={0}
-          className="absolute left-[8%] bottom-[12%] flex flex-col items-center md:bottom-[10%] lg:bottom-[4%] w-[190px] md:w-[130px] z-40 lg:w-[160px] cursor-pointer"
+          className="absolute left-[8%] bottom-[12%] flex flex-col items-center md:bottom-[10%] lg:bottom-[4%] w-[190px] md:w-[130px] z-10 lg:w-[160px] cursor-pointer"
           style={{
             transform: scrollDir === "left" ? "scaleX(-1)" : "scaleX(1)",
           }}
@@ -384,7 +384,7 @@ export default function CategoryStreet() {
           }}
           role="link"
           tabIndex={0}
-          className="absolute top-[12%] md:top-[5%] left-0 z-[999999999] w-[90px] sm:w-[110px] md:w-[130px] lg:w-[160px] cursor-pointer flex flex-col items-center"
+          className="absolute top-[12%] md:top-[5%] left-0 z-10 w-[90px] sm:w-[110px] md:w-[130px] lg:w-[160px] cursor-pointer flex flex-col items-center"
         >
           <p
             className="font-bold text-white"

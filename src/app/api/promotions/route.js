@@ -14,11 +14,14 @@ export const GET = withErrors(async (req) => {
         .filter(Boolean)
     : [];
   const result = await container.listPublicPromotions.execute({
+    countryCode: sp.get("country_code")?.toUpperCase() || undefined,
     city: sp.get("city") || undefined,
-    state: sp.get("state") || undefined,
+    state: sp.get("state")?.toUpperCase() || undefined,
     timezone: sp.get("timezone") || undefined,
     category: categoryList.length === 1 ? categoryList[0] : undefined,
     categories: categoryList.length > 1 ? categoryList : undefined,
+    page: sp.get("page") || undefined,
+    limit: sp.get("limit") || undefined,
   });
   return jsonOk(result);
 });

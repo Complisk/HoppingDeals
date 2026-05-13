@@ -22,10 +22,13 @@
 
 import Image from "next/image";
 
-const CLOUD_NAME = "dgdfenqsv";
+// NEXT_PUBLIC_ so it's inlined into the client bundle at build time. We
+// intentionally don't ship a fallback — a missing cloud name should fail
+// loudly in dev rather than silently serve broken URLs.
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
 function buildUrl(publicId, { width = 600, ar = "4:3" } = {}) {
-  if (!publicId) return null;
+  if (!publicId || !CLOUD_NAME) return null;
   // f_auto picks WebP/AVIF where supported, q_auto picks compression by
   // network/device, c_fill+ar crops to the requested aspect ratio.
   const transforms = `f_auto,q_auto,w_${width},c_fill,ar_${ar}`;

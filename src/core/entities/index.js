@@ -6,3 +6,4 @@ export { Promotion } from "./promotion.js";
 export { SubscriptionTemplate } from "./subscription-template.js";
 export { BusinessSubscription } from "./business-subscription.js";
 export { SubscriptionHistory } from "./subscription-history.js";
+export { Photo } from "./photo.js";

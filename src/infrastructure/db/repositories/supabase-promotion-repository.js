@@ -207,48 +207,77 @@ export class SupabasePromotionRepository {
   //   `categories` list of slugs OR'd together (e.g. ["food", "coffee-tea"]).
   // CategoryStreet on the homepage produces multi-category URLs such as
   // /category/food,coffee-&-tea,restaurants — those land here as a list.
-  async listPublic({ city, state, timezone, category, categories }) {
-    // Pre-resolve promotionIds that match city/state/timezone (if any).
+  async listPublic({
+    countryCode,
+    city,
+    state,
+    timezone,
+    category,
+    categories,
+    page = 1,
+    limit = 20,
+  } = {}) {
+    // Pre-resolve promotionIds that match country/city/state/timezone (if any).
     let promotionIdFilter = null;
-    if (city || state || timezone) {
+    if (countryCode || city || state || timezone) {
       let locQuery = this.supabase.from(LOC_TABLE).select("promotionId");
+      if (countryCode) locQuery = locQuery.eq("country_code", countryCode);
       if (city) locQuery = locQuery.eq("city_name", city);
       if (state) locQuery = locQuery.eq("state_code", state);
       if (timezone) locQuery = locQuery.eq("timezone", timezone);
       const { data: locs, error: locErr } = await locQuery;
       if (locErr) throw locErr;
       promotionIdFilter = [...new Set((locs ?? []).map((l) => l.promotionId))];
-      if (promotionIdFilter.length === 0) return [];
+      if (promotionIdFilter.length === 0) {
+        return { rows: [], total: 0 };
+      }
     }
 
-    let q = this.supabase
-      .from(TABLE)
-      .select(
+    const buildQuery = (selector, opts) => {
+      let q = this.supabase
+        .from(TABLE)
+        .select(selector, opts)
+        .eq("status", "active");
+
+      // Build the union of slug variants across either the single category
+      // or the categories[] list. Production seeds slugs in two flavours
+      // ("coffee-&-tea" vs "coffee-tea"); expandCategorySlug emits both so
+      // the URL-form and the DB-form both match.
+      const slugList = Array.isArray(categories) && categories.length > 0
+        ? categories
+        : category
+          ? [category]
+          : [];
+      if (slugList.length > 0) {
+        const allVariants = Array.from(
+          new Set(slugList.flatMap((s) => expandCategorySlug(s))),
+        );
+        q = q.overlaps("categories", allVariants);
+      }
+
+      if (promotionIdFilter) q = q.in("id", promotionIdFilter);
+      return q;
+    };
+
+    const safePage = Math.max(1, Number(page) || 1);
+    const safeLimit = Math.max(1, Number(limit) || 20);
+    const from = (safePage - 1) * safeLimit;
+    const to = from + safeLimit - 1;
+
+    const [
+      { data, error },
+      { count, error: countErr },
+    ] = await Promise.all([
+      buildQuery(
         `*, PromotionLocations(*), Businesses(name, categories, businessAddress)`,
       )
-      .eq("status", "active");
-
-    // Build the union of slug variants across either the single category
-    // or the categories[] list. Production seeds slugs in two flavours
-    // ("coffee-&-tea" vs "coffee-tea"); expandCategorySlug emits both so
-    // the URL-form and the DB-form both match.
-    const slugList = Array.isArray(categories) && categories.length > 0
-      ? categories
-      : category
-        ? [category]
-        : [];
-    if (slugList.length > 0) {
-      const allVariants = Array.from(
-        new Set(slugList.flatMap((s) => expandCategorySlug(s))),
-      );
-      q = q.overlaps("categories", allVariants);
-    }
-
-    if (promotionIdFilter) q = q.in("id", promotionIdFilter);
-
-    const { data, error } = await q.order("createdAt", { ascending: false });
+        .order("createdAt", { ascending: false })
+        .range(from, to),
+      buildQuery("id", { count: "exact", head: true }),
+    ]);
     if (error) throw error;
-    return (data ?? []).map(toPromotion);
+    if (countErr) throw countErr;
+    return { rows: (data ?? []).map(toPromotion), total: count ?? 0 };
   }
 
   async listForBusiness(businessId, { search, status }) {

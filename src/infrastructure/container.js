@@ -15,6 +15,7 @@ import { SupabaseTemplateRepository } from "./db/repositories/supabase-template-
 import { SupabasePromotionRepository } from "./db/repositories/supabase-promotion-repository.js";
 import { SupabaseSubscriptionTemplateRepository } from "./db/repositories/supabase-subscription-template-repository.js";
 import { SupabaseBusinessSubscriptionRepository } from "./db/repositories/supabase-business-subscription-repository.js";
+import { SupabasePhotoRepository } from "./db/repositories/supabase-photo-repository.js";
 
 import { BcryptPasswordHasher } from "./auth/bcrypt-password-hasher.js";
 import { JwtTokenService } from "./auth/jwt-token-service.js";
@@ -95,6 +96,9 @@ import { HandleStripeWebhookUseCase } from "../application/payments/handle-webho
 // ─── Location ───────────────────────────────────────────────────────────────
 import { LookupLocationUseCase } from "../application/location/lookup.js";
 
+// ─── Photos ─────────────────────────────────────────────────────────────────
+import { ListPublicPhotosUseCase } from "../application/photos/list-public.js";
+
 // Lazily-built singletons. Uses a Map so a missing env var only blows up the
 // feature that needs it, not the entire request graph.
 const cache = new Map();
@@ -116,6 +120,7 @@ const subscriptionTemplateRepo = () =>
   memo("subscriptionTemplateRepo", () => new SupabaseSubscriptionTemplateRepository({ supabase: supabase() }));
 const subscriptionRepo = () =>
   memo("subscriptionRepo", () => new SupabaseBusinessSubscriptionRepository({ supabase: supabase() }));
+const photoRepo = () => memo("photoRepo", () => new SupabasePhotoRepository({ supabase: supabase() }));
 
 // ── Adapters ─────────────────────────────────────────────────────────────────
 const hasher = () => memo("hasher", () => new BcryptPasswordHasher());
@@ -251,4 +256,7 @@ export const container = {
 
   // Location
   get lookupLocation() { return new LookupLocationUseCase({ geoLocator: geoLocator() }); },
+
+  // Photos
+  get listPublicPhotos() { return new ListPublicPhotosUseCase({ photoRepo: photoRepo() }); },
 };

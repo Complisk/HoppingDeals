@@ -15,6 +15,7 @@ import {
   SubscriptionTemplate,
   BusinessSubscription,
   SubscriptionHistory,
+  Photo,
 } from "../../core/entities/index.js";
 
 const num = (v) => (v == null ? v : Number(v));
@@ -119,6 +120,8 @@ export const toBusinessSubscription = (row) => {
 
 export const toSubscriptionHistory = (row) =>
   row && new SubscriptionHistory(row);
+
+export const toPhoto = (row) => row && new Photo(row);
 
 // Helpers for outgoing payloads — strip relationship objects + auto-managed
 // timestamps before INSERT/UPDATE so Supabase doesn't choke.

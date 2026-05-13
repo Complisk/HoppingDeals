@@ -119,10 +119,10 @@ export class SupabaseUserRepository {
   async listRecent(limit = 5) {
     const { data, error } = await this.supabase
       .from(TABLE)
-      .select("*")
+      .select("*, Roles(*)")
       .order("createdAt", { ascending: false })
       .limit(limit);
     if (error) throw error;
-    return (data ?? []).map(toUser);
+    return (data ?? []).map((row) => toUser({ ...row, role: row.Roles }));
   }
 }
