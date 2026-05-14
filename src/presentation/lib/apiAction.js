@@ -30,19 +30,29 @@ const fetchData = async (url, options = {}, callBack, _notProtected) => {
     response = res.data;
     if (callBack) callBack(response, true);
   } catch (err) {
-    error = err.response?.data || { message: err.message };
-    if (callBack) callBack(err.response?.data, false);
+    const responseData = err.response?.data;
+    const status = err.response?.status;
+    const responseMessage = responseData?.message;
 
-    if (err.response?.status === 403) {
+    error = responseData || { message: err.message };
+    if (callBack) callBack(responseData, false);
+
+    // Silently swallow expected "No token provided" 401s — these fire when a
+    // visitor hits an authenticated endpoint and should not surface a toast.
+    if (status === 401 && responseMessage === "No token provided") {
+      return { response, error };
+    }
+
+    if (status === 403) {
       const message =
-        err.response?.data?.message ||
+        responseMessage ||
         "You don't have permission to perform this action";
       toast.error(message);
       return { response, error };
     }
 
-    if (err.response?.data?.message) {
-      toast.error(err.response.data.message);
+    if (responseMessage) {
+      toast.error(responseMessage);
     } else if (err.message) {
       toast.error(err.message);
     }

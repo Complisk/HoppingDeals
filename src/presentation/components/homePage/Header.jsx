@@ -85,15 +85,22 @@ export default function Header() {
 
   return (
     <>
-      <header className="py-3 px-4 z-40 sm:px-8 border-b border-gray-100 fixed top-0 left-0 right-0 bg-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Logo size="xl" />
+      <header className="py-3 px-3 z-40 sm:px-8 border-b border-gray-100 fixed top-0 left-0 right-0 bg-white">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
+          <div className="shrink-0">
+            <span className="sm:hidden">
+              <Logo size="md" />
+            </span>
+            <span className="hidden sm:inline">
+              <Logo size="xl" />
+            </span>
+          </div>
 
-          <div className="flex items-center gap-3 sm:gap-6">
-            <Link href="/business/visitor" className="hidden sm:inline-flex">
+          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+            <Link href="/business/visitor" className="inline-flex">
               <button
                 type="button"
-                className="border border-[color:var(--primary,#E31E24)] text-[#E31E24] font-semibold text-base px-4 py-2 rounded-md hover:bg-red-50 transition"
+                className="inline-flex h-9 items-center justify-center whitespace-nowrap  rounded-sm border border-[#000000] bg-white px-5 text-sm font-semibold leading-none text-[#E31E24] transition hover:bg-red-50 sm:h-10 sm:px-6 sm:text-base"
               >
                 Business Portal
               </button>
@@ -104,9 +111,9 @@ export default function Header() {
                 <button
                   type="button"
                   aria-label="Open menu"
-                  className="p-2 rounded-xl border-gray-200 hover:bg-gray-100 transition"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 sm:h-10 sm:w-10"
                 >
-                  <Menu className="h-7 w-7 text-gray-500" />
+                  <Menu className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
                 </button>
               </DropdownMenu.Trigger>
 
@@ -118,17 +125,6 @@ export default function Header() {
                     transition={{ duration: 0.2 }}
                     className="w-64 rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl border border-gray-200 z-50 p-2"
                   >
-                    {/* Mobile-only Business Portal entry, since the desktop button is hidden on small screens */}
-                    <div className="sm:hidden">
-                      <MenuItem
-                        href="/business/visitor"
-                        Icon={Building2}
-                        label="Business Portal"
-                        active={pathname?.startsWith("/business/visitor")}
-                      />
-                      <DropdownMenu.Separator className="my-2 h-px bg-gray-200" />
-                    </div>
-
                     {PUBLIC_ITEMS_BEFORE_CATEGORIES.map((item) => (
                       <MenuItem
                         key={item.href}
