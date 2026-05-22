@@ -1,7 +1,7 @@
 {
-  "name": "Complisk",
-  "short_name": "Complisk",
-  "description": "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
+  "name": "Hopping Deals",
+  "short_name": "Hopping Deals",
+  "description": "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

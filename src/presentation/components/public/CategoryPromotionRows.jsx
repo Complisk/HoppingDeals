@@ -3,7 +3,7 @@
 // Per-category rows on the homepage. Each row corresponds to one category
 // and lists the active promotions tagged with that category. When the
 // filtered list is empty, we fall back to a right-aligned "No promotions
-// available" line — mirrors the live complisk.com layout.
+// available" line — mirrors the live hoppingdeals.world layout.
 //
 // Reads from the same Redux slice the main feed populates (promotion.featuredPromotions),
 // so it doesn't trigger a second network request.

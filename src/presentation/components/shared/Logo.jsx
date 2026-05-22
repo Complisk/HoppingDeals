@@ -16,11 +16,11 @@ const Logo = ({ size = "md", className = "" }) => {
     <Link
       href="/"
       className="inline-flex items-center"
-      aria-label="Complisk home"
+      aria-label="Hopping Deals home"
     >
       <Image
-        src="/complisk-logo.png"
-        alt="Complisk"
+        src="/hopping-deals-logo.jpg"
+        alt="Hopping Deals"
         width={width}
         height={height}
         priority

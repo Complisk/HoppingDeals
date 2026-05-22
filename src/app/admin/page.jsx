@@ -9,7 +9,7 @@ import { jwtVerify } from "jose";
 
 async function readAdminPayload() {
   const store = await cookies();
-  const token = store.get("complisk_session")?.value;
+  const token = store.get("hopping_deals_session")?.value;
   const secret = process.env.JWT_SECRET;
   if (!token || !secret) return null;
   try {

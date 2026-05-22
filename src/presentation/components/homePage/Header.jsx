@@ -1,6 +1,6 @@
 "use client";
 
-// Header — mirrors the live complisk.com layout:
+// Header — mirrors the live hoppingdeals.world layout:
 //   Top row:    Logo (left) ── Business Portal button + hamburger menu (right)
 //   Bottom row: HeaderLocationSearch (left) ── Login link (right, mobile-only)
 //
@@ -43,13 +43,13 @@ const PUBLIC_ITEMS_BEFORE_CATEGORIES = [
 ];
 const PUBLIC_ITEMS_AFTER_CATEGORIES = [
   {
-    label: "Complisk Business Directory",
-    href: "/complisk-business-directory",
+    label: "Hopping Deals Business Directory",
+    href: "/hopping-deals-business-directory",
     Icon: Building2,
   },
 ];
 
-// Category list mirrors the live complisk.com menu. Each entry links to
+// Category list mirrors the live hoppingdeals.world menu. Each entry links to
 // /category/<slug> — slugs match the keys our PromotionFeed uses.
 const CATEGORIES = [
   { label: "Restaurants", slug: "restaurants" },

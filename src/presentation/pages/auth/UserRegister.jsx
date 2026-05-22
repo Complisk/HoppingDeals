@@ -54,7 +54,7 @@ const UserRegister = () => {
       });
       if (response && response.user) {
         toast({
-          title: "Welcome to Complisk!",
+          title: "Welcome to Hopping Deals!",
           description: "Your account has been created successfully.",
         });
         navigate.push("/");

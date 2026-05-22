@@ -184,7 +184,7 @@ const BusinessRegister = () => {
       console.log("Registration response:", response);
       if (response) {
         toast({
-          title: "Welcome to Complisk!",
+          title: "Welcome to Hopping Deals!",
           description: "Your business account has been created successfully.",
         });
         navigate.push("/business/dashboard");
@@ -578,7 +578,7 @@ const BusinessRegister = () => {
           </h2>
           <p className="text-lg opacity-80 max-w-md">
             Create promotions, reach local customers, and grow your business
-            with Complisk.
+            with Hopping Deals.
           </p>
 
           <div className="mt-12 grid grid-cols-3 gap-8 text-center">

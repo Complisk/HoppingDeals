@@ -11,7 +11,7 @@ import { NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 const USER_AGENT =
-  "Complisk/1.0 (https://complisk.com; support@complisk.com) location-autocomplete";
+  "HoppingDeals/1.0 (https://hoppingdeals.world; support@hoppingdeals.world) location-autocomplete";
 
 export async function GET(req) {
   const sp = req.nextUrl.searchParams;

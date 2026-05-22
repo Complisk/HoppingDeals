@@ -10,7 +10,7 @@ import { createAdminClient } from "@/utils/supabase/server";
 export const revalidate = 3600;
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 const STATIC_ROUTES = [
   "/",
@@ -19,7 +19,7 @@ const STATIC_ROUTES = [
   "/categories",
   "/about-us",
   "/terms",
-  "/complisk-business-directory",
+  "/hopping-deals-business-directory",
 ];
 
 // Mirrors src/data/mockData.js. Hard-coded so the sitemap stays

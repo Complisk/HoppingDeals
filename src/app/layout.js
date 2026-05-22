@@ -14,25 +14,25 @@ const outfit = Outfit({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+const SITE_URL = process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Complisk | Local business promotions and deals",
-    template: "%s · Complisk",
+    default: "Hopping Deals | Local business promotions and deals",
+    template: "%s · Hopping Deals",
   },
   description:
-    "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
-  applicationName: "Complisk",
-  authors: [{ name: "Complisk" }],
+    "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
+  applicationName: "Hopping Deals",
+  authors: [{ name: "Hopping Deals" }],
   keywords: [
     "local promotions",
     "business promotions",
     "local deals",
     "small business marketing",
     "geo targeted promotions",
-    "Complisk",
+    "Hopping Deals",
   ],
   alternates: {
     canonical: "/",
@@ -44,22 +44,21 @@ export const metadata = {
   // [id]) override this default.
   openGraph: {
     type: "website",
-    title: "Complisk | Local business promotions and deals",
+    title: "Hopping Deals | Local business promotions and deals",
     description:
-      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
+      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
     url: "/",
-    siteName: "Complisk",
+    siteName: "Hopping Deals",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Complisk | Local business promotions and deals",
+    title: "Hopping Deals | Local business promotions and deals",
     description:
-      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Complisk.",
+      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
   },
   icons: {
     // Multiple sizes so the browser picks the sharpest one for the tab,
-    // bookmark, and home-screen icon. Production complisk.com ships
-    // these same files in /public.
+    // bookmark, and home-screen icon.
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },

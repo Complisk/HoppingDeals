@@ -1,4 +1,4 @@
-// Authoritative permission map. Mirrors complisk-backend/utils/permissionMap.js.
+// Authoritative permission map. Mirrors hopping-deals-backend/utils/permissionMap.js.
 export const PERMISSION_MAP = {
   dashboard: ["view"],
   roles: ["view", "create", "edit", "delete"],

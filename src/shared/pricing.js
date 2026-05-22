@@ -1,4 +1,4 @@
-// Promotion pricing rules — ported from complisk-backend/utils/calculatePrice.js.
+// Promotion pricing rules — ported from hopping-deals-backend/utils/calculatePrice.js.
 //
 // Rules summary:
 //   Online store (online-ecommerce):

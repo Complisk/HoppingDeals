@@ -1,7 +1,7 @@
 "use client";
 
 // /business/subscription — three-tier campaign plan selector that mirrors
-// the production complisk.com layout: Starter / Professional (highlighted)
+// the production hoppingdeals.world layout: Starter / Professional (highlighted)
 // / Enterprise. "Get Started" hands the customer to the existing checkout
 // service which spins up a Stripe session.
 

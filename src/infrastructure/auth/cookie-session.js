@@ -4,7 +4,7 @@
 // centralize the cookie name and attribute defaults so we never accidentally
 // drop httpOnly or sameSite somewhere.
 
-export const SESSION_COOKIE = "complisk_session";
+export const SESSION_COOKIE = "hopping_deals_session";
 
 export const SESSION_COOKIE_OPTIONS = {
   httpOnly: true,

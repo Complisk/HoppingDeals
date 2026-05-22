@@ -5,7 +5,7 @@
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
 
-const SESSION_COOKIE = "complisk_session";
+const SESSION_COOKIE = "hopping_deals_session";
 
 const businessProtected = /^\/business\/(?!login|register|visitor|payment-success)/;
 const adminProtected = /^\/admin\/(?!login)/;

@@ -4,7 +4,7 @@
 // at the sitemap.
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 export default function robots() {
   return {

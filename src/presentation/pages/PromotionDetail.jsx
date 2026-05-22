@@ -79,11 +79,12 @@ const PromotionDetail = () => {
             Back to Promotions
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:items-start">
             {/* Left Column - Banner & Info */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
+              className="lg:sticky lg:top-24 lg:self-start"
             >
               {/* Banner Image */}
               <div className="relative rounded-2xl overflow-hidden shadow-xl">

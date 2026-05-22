@@ -1,6 +1,6 @@
 "use client";
 
-// Public-facing promotion details modal — mirrors the live complisk.com layout:
+// Public-facing promotion details modal — mirrors the live hoppingdeals.world layout:
 // the hero image at the top, then a card below with business name, address,
 // formatted date range, formatted time range, the rich description (from
 // metadata.promotionDescription), and a Website Link CTA. Save (wishlist)

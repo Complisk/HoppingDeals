@@ -12,7 +12,7 @@ import { ImageResponse } from "next/og";
 import { createClient } from "@supabase/supabase-js";
 
 export const runtime = "edge";
-export const alt = "Complisk promotion";
+export const alt = "Hopping Deals promotion";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -53,7 +53,7 @@ export default async function Image({ params }) {
   const businessName =
     promotion?.Businesses?.name || meta.businessName || "Local Business";
   const description =
-    (meta.promotionDescription || "Find this deal on Complisk").slice(0, 220);
+    (meta.promotionDescription || "Find this deal on Hopping Deals").slice(0, 220);
   const thumb = toThumb(promotion?.imageUrl);
 
   return new ImageResponse(
@@ -142,7 +142,7 @@ export default async function Image({ params }) {
             >
               %
             </div>
-            Complisk
+            Hopping Deals
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -174,7 +174,7 @@ export default async function Image({ params }) {
               letterSpacing: "0.05em",
             }}
           >
-            complisk.com
+            hoppingdeals.world
           </div>
         </div>
       </div>

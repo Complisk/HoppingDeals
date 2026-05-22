@@ -1,4 +1,4 @@
-// Date helpers ported from complisk-backend/utils/dateUtils.js.
+// Date helpers ported from hopping-deals-backend/utils/dateUtils.js.
 
 export function formatDate(date) {
   const d = new Date(date);

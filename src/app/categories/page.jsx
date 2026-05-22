@@ -4,7 +4,7 @@ import Footer from "@/presentation/components/homePage/Footer";
 import { categories } from "@/data/mockData";
 
 export const metadata = {
-  title: "Categories | Complisk",
+  title: "Categories | Hopping Deals",
   description:
     "Browse promotions by category — restaurants, retail, services, and more.",
   alternates: { canonical: "/categories" },

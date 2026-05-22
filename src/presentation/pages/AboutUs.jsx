@@ -4,7 +4,7 @@ import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 import { motion } from "framer-motion";
 
-// Mirrors the live complisk.com/about-us copy. If marketing tweaks the
+// Mirrors the live hoppingdeals.world/about-us copy. If marketing tweaks the
 // wording, update both this component and the page metadata in
 // src/app/about-us/page.jsx.
 export default function AboutUs() {
@@ -25,7 +25,7 @@ export default function AboutUs() {
             <section className="mb-12">
               <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Complisk is a specialized promotion platform designed to bridge
+                Hopping Deals is a specialized promotion platform designed to bridge
                 the gap between businesses and consumers. Our goal is to empower
                 business owners to create customizable promotional banners
                 targeted to specific locations, allowing users to discover
@@ -41,7 +41,7 @@ export default function AboutUs() {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 We believe in a transparent marketplace. Every deal banner you
                 see on our platform is created directly by the business owner
-                for you. By eliminating the &ldquo;middleman,&rdquo; Complisk
+                for you. By eliminating the &ldquo;middleman,&rdquo; Hopping Deals
                 takes no commissions or cuts from these transactions. This
                 allows businesses to save money on marketing and pass those
                 direct savings on to their customers.
@@ -51,13 +51,13 @@ export default function AboutUs() {
             <section className="mb-12">
               <h2 className="text-2xl font-bold mb-4">Our Story</h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Complisk was born from real-world experience. Our founder, a
+                Hopping Deals was born from real-world experience. Our founder, a
                 former business owner, understood the immense effort and high
                 costs required to attract new customers. For years, small local
                 businesses have sought a technology platform that offers a
                 simple, automated way to launch micro-promotions without the
                 complexity of social media advertising, SEO, or traditional
-                coupon sites. Complisk is the solution to those challenges.
+                coupon sites. Hopping Deals is the solution to those challenges.
               </p>
             </section>
 
@@ -68,7 +68,7 @@ export default function AboutUs() {
                 Your Local Deals, All in One Place
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed mb-4">
-                Complisk is your all-in-one platform for discovering the best
+                Hopping Deals is your all-in-one platform for discovering the best
                 deals and promotions right in your neighborhood. We partner with
                 local merchants to bring you exclusive offers, making it easier
                 than ever to spend consciously and save money.
@@ -78,7 +78,7 @@ export default function AboutUs() {
                 You Build the Platform
               </h3>
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Don&rsquo;t see your favorite local business on Complisk? You
+                Don&rsquo;t see your favorite local business on Hopping Deals? You
                 have the power to change that! Simply sign up and use the
                 Tagging feature on your Profile Page to nominate your go-to
                 spots. Once a business receives enough tags from our community,
@@ -117,7 +117,7 @@ export default function AboutUs() {
                 Every promotion includes a unique QR code (future version
                 release), allowing customers to scan directly from the
                 promotion. This creates measurable engagement and trackable
-                response. Complisk provides real-time analytics so businesses
+                response. Hopping Deals provides real-time analytics so businesses
                 can monitor views, QR scans, and overall engagement. Promotion
                 dashboards display activity over the last 7 days, 30 days, and
                 total campaign performance, giving clear visibility into
@@ -127,11 +127,11 @@ export default function AboutUs() {
 
             <section className="mb-12">
               <h2 className="text-2xl font-bold mb-4">
-                How Complisk Is Different
+                How Hopping Deals Is Different
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed mb-4">
                 Traditional advertising platforms are often expensive,
-                complicated, and unpredictable. Complisk is structured around
+                complicated, and unpredictable. Hopping Deals is structured around
                 clarity and control. Each campaign runs for up to a fixed 30-day
                 period from your selected start date. Businesses know exactly
                 what they are paying and exactly how long their promotion will
@@ -165,10 +165,10 @@ export default function AboutUs() {
               </ul>
 
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Complisk was built from real-world business experience. We
+                Hopping Deals was built from real-world business experience. We
                 understand how difficult and costly it can be to attract new
                 customers through traditional social media advertising, search
-                engine ads, or coupon marketplaces. Complisk provides a direct,
+                engine ads, or coupon marketplaces. Hopping Deals provides a direct,
                 structured alternative &mdash; predictable cost, geographic
                 precision, measurable performance, and full control in the hands
                 of the business owner.

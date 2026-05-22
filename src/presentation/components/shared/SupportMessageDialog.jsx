@@ -93,7 +93,7 @@ export default function SupportMessageDialog({
         <DialogHeader>
           <DialogTitle>Support Message</DialogTitle>
           <DialogDescription className="sr-only">
-            Send a support message to the Complisk team.
+            Send a support message to the Hopping Deals team.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={onSubmit} className="space-y-4">

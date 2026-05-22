@@ -74,7 +74,7 @@ export default function Page() {
                   No photos available right now
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-gray-600">
-                  The Complisk admin team has not published any gallery items
+                  The Hopping Deals admin team has not published any gallery items
                   yet.
                 </p>
               </div>

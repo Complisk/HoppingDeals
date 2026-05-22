@@ -1,4 +1,4 @@
-// Categories with icons. Slugs match complisk.com production /category/<slug> URLs.
+// Categories with icons. Slugs match hoppingdeals.world production /category/<slug> URLs.
 export const categories = [
     { id: "active-life", name: "Active Life", icon: "🚴", color: "#43A047" },
     { id: "arts-entertainment", name: "Arts & Entertainment", icon: "🎭", color: "#8E24AA" },

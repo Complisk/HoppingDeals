@@ -6,7 +6,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Complisk · Local business promotions and deals";
+export const alt = "Hopping Deals · Local business promotions and deals";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -58,7 +58,7 @@ export default async function Image() {
               letterSpacing: "-0.04em",
             }}
           >
-            Complisk
+            Hopping Deals
           </div>
         </div>
         <div
@@ -82,7 +82,7 @@ export default async function Image() {
             letterSpacing: "0.05em",
           }}
         >
-          complisk.com
+          hoppingdeals.world
         </div>
       </div>
     ),

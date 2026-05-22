@@ -3,7 +3,7 @@ import StructuredData from "@/presentation/components/shared/StructuredData";
 import { categories } from "@/data/mockData";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 const slugToTitle = (slug) =>
   String(slug || "")
@@ -14,8 +14,8 @@ export async function generateMetadata({ params }) {
   const { slug } = await params;
   const known = categories.find((c) => c.id === slug);
   const name = known?.name || slugToTitle(slug);
-  const title = `${name} promotions | Complisk`;
-  const description = `Browse active ${name.toLowerCase()} promotions and local deals on Complisk.`;
+  const title = `${name} promotions | Hopping Deals`;
+  const description = `Browse active ${name.toLowerCase()} promotions and local deals on Hopping Deals.`;
   const path = `/category/${slug}`;
   return {
     title,
@@ -33,12 +33,12 @@ export default async function Page({ params }) {
   const collectionSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `${name} promotions on Complisk`,
-    description: `Active ${name.toLowerCase()} promotions and local deals on Complisk.`,
+    name: `${name} promotions on Hopping Deals`,
+    description: `Active ${name.toLowerCase()} promotions and local deals on Hopping Deals.`,
     url: `${SITE_URL}/category/${slug}`,
     isPartOf: {
       "@type": "WebSite",
-      name: "Complisk",
+      name: "Hopping Deals",
       url: SITE_URL,
     },
   };

@@ -3,7 +3,7 @@
 // CategoryStreet — the homepage cityscape with draggable buildings, animated
 // car + airplane, day/night background, sun/moon, and clouds.
 //
-// Reverse-engineered from the production bundle on complisk.com because the
+// Reverse-engineered from the production bundle on hoppingdeals.world because the
 // original source was never committed back to GitHub. Behaviour mirrors what
 // I could observe in the live deployment:
 //   - 18 building tiles, each linking to /category/<slug>

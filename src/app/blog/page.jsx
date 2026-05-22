@@ -2,7 +2,7 @@ import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 
 export const metadata = {
-  title: "DIY Marketing Strategies (2026) | Complisk",
+  title: "DIY Marketing Strategies (2026) | Hopping Deals",
   description:
     "This blog post outlines several powerful, budget-friendly marketing strategies to help businesses grow.",
   alternates: { canonical: "/blog" },
@@ -60,7 +60,7 @@ export default function Page() {
           </p>
           <ul className="list-disc pl-6 space-y-2 mb-8">
             <li>
-              Brands like Airbnb, Amazon, and Complisk built their businesses by
+              Brands like Airbnb, Amazon, and Hopping Deals built their businesses by
               generating trust through promoting customer feedback.
             </li>
             <li>

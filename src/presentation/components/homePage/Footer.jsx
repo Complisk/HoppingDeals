@@ -1,6 +1,6 @@
 "use client";
 
-// Footer — mirrors the live complisk.com layout: 3-column links + a bottom
+// Footer — mirrors the live hoppingdeals.world layout: 3-column links + a bottom
 // row with legal links and locale buttons. The shared/Footer.jsx variant
 // re-exports this for backwards compatibility with older imports.
 
@@ -60,18 +60,18 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/complisk-business-directory"
+                  href="/hopping-deals-business-directory"
                   className="hover:text-white transition"
                 >
-                  Complisk Business Directory
+                  Hopping Deals Business Directory
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Complisk */}
+          {/* Hopping Deals */}
           <div>
-            <h3 className="text-white text-2xl font-bold mb-8">Complisk</h3>
+            <h3 className="text-white text-2xl font-bold mb-8">Hopping Deals</h3>
             <ul className="space-y-4">
               <li>
                 <Link href="/about-us" className="hover:text-white transition">
@@ -117,7 +117,7 @@ export default function Footer() {
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-sm">
           <Link href="/terms" className="hover:text-white transition">
             <p>
-              © 2025 Complisk, Inc. - Terms - Sitemap - Privacy - Your Privacy
+              © 2025 Hopping Deals, Inc. - Terms - Sitemap - Privacy - Your Privacy
               Choice ?
             </p>
           </Link>
@@ -126,10 +126,10 @@ export default function Footer() {
             {/* Instagram pill — visibly larger than the locale toggles so the
                 brand's social presence is unmissable from the footer. */}
             <a
-              href="https://www.instagram.com/complisk_promo"
+              href="https://www.instagram.com/hopping_deals"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Follow Complisk on Instagram"
+              aria-label="Follow Hopping Deals on Instagram"
               className="inline-flex items-center gap-2 rounded-full bg-white/10 hover:bg-white px-4 py-2 text-sm font-semibold text-white hover:text-[#1A1110] transition-colors"
             >
               <InstagramIcon className="h-5 w-5" />

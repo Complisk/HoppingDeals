@@ -1,33 +1,33 @@
 import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 
-const SITE_URL = process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+const SITE_URL = process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 export const metadata = {
-  title: "Complisk Business Directory",
+  title: "Hopping Deals Business Directory",
   description:
-    "Support local with Complisk and discover businesses powering our platform.",
-  alternates: { canonical: "/complisk-business-directory" },
+    "Support local with Hopping Deals and discover businesses powering our platform.",
+  alternates: { canonical: "/hopping-deals-business-directory" },
   openGraph: {
-    title: "Complisk Business Directory",
+    title: "Hopping Deals Business Directory",
     description:
-      "Support local with Complisk and discover businesses powering our platform.",
-    url: "/complisk-business-directory",
+      "Support local with Hopping Deals and discover businesses powering our platform.",
+    url: "/hopping-deals-business-directory",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Complisk Business Directory",
+    title: "Hopping Deals Business Directory",
     description:
-      "Support local with Complisk and discover businesses powering our platform.",
+      "Support local with Hopping Deals and discover businesses powering our platform.",
   },
 };
 
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Complisk Business Directory",
-  url: `${SITE_URL}/complisk-business-directory`,
+  name: "Hopping Deals Business Directory",
+  url: `${SITE_URL}/hopping-deals-business-directory`,
 };
 
 export default function Page() {
@@ -43,11 +43,11 @@ export default function Page() {
         <main className="flex-grow px-4 py-4 md:py-28 sm:px-8">
           <section className="mx-auto max-w-5xl">
             <h1 className="text-3xl font-extrabold text-center tracking-tight text-slate-900 sm:text-4xl">
-              Complisk Business Directory
+              Hopping Deals Business Directory
             </h1>
 
             <p className="mt-5 text-base leading-8 text-slate-700 sm:text-lg">
-              Support Local with Complisk! Discover the incredible businesses
+              Support Local with Hopping Deals! Discover the incredible businesses
               that power our platform. Whether they have already shared
               exclusive offers with our users or are gearing up for future
               launches, these merchants are committed to excellence. Join us in
@@ -56,8 +56,8 @@ export default function Page() {
 
             <div className="mt-20">
               <img
-                src="/new-assets/complisk-business-directory-snip.PNG"
-                alt="Complisk Business Directory"
+                src="/new-assets/hopping-deals-business-directory-snip.PNG"
+                alt="Hopping Deals Business Directory"
                 className="h-auto max-h-[560px] w-full object-contain"
                 loading="lazy"
               />

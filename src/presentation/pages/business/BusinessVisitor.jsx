@@ -1,6 +1,6 @@
 "use client";
 
-// /business/visitor — public marketing page mirroring the live complisk.com
+// /business/visitor — public marketing page mirroring the live hoppingdeals.world
 // layout. Three pricing cards (Starter/Professional/Enterprise), a Statewide
 // upgrade banner with tooltip, three feature cards, a CTA, and the embedded
 // CreatePromotion preview that lets visitors try the promotion builder

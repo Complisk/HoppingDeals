@@ -1,11 +1,11 @@
-# Complisk — Fullstack (Next.js 16)
+# Hopping Deals — Fullstack (Next.js 16)
 
 A location-based business promotions platform. Local businesses publish
 geo-targeted promotions; users discover deals near them. Stripe handles
 subscriptions and per-promotion add-on billing; Cloudinary stores media.
 
 This repository is the **single Next.js project** that replaces the previous
-two-repo setup (`complisk-backend` + `complisk-frontend`). Everything is now
+two-repo setup (`hopping-deals-backend` + `hopping-deals-frontend`). Everything is now
 one codebase with clean architecture, App Router routing, and JS (no
 TypeScript).
 
@@ -94,7 +94,7 @@ isolation (no DB, no Next runtime needed).
 ## Directory layout
 
 ```
-complisk-fullstack/
+hopping-deals-fullstack/
 ├── prisma/
 │   ├── schema.prisma          # Postgres schema (Prisma 7 driver-adapter style)
 │   └── migrations/            # generated migration files
@@ -175,7 +175,6 @@ complisk-fullstack/
 │   │
 │   └── shared/                      # cross-cutting (pricing.js, date-utils.js)
 │
-├── DRIFT_REPORT.md            # local-vs-production drift analysis
 ├── components.json            # shadcn/ui CLI config
 ├── next.config.mjs            # reactCompiler: true
 ├── jsconfig.json              # @/* → ./src/*
@@ -300,7 +299,7 @@ with anything else.
 - **Login flow:** POST `/api/auth/login` with `{ email, password, type }`
   where `type` is `"user" | "business" | "admin"`. The handler signs a JWT
   with `{ id, type }` and sets it as an `httpOnly` cookie named
-  `complisk_session`. Same JWT is also returned in the body for older
+  `hopping_deals_session`. Same JWT is also returned in the body for older
   client code that expects it.
 - **Cookie attributes:** `httpOnly`, `sameSite=lax`, `secure` in
   production, `path=/`, `maxAge` matches `JWT_EXPIRE`.
@@ -469,9 +468,9 @@ provider (e.g. Neon, Supabase, RDS).
 
 This single repo replaces:
 
-- **`complisk-backend`** — Express 4 + Sequelize/Postgres + JWT in
+- **`hopping-deals-backend`** — Express 4 + Sequelize/Postgres + JWT in
   Authorization header + multer for uploads + node-cron jobs.
-- **`complisk-frontend`** — Vite + React 18 + TypeScript + Redux Toolkit
+- **`hopping-deals-frontend`** — Vite + React 18 + TypeScript + Redux Toolkit
   + react-router-dom + tailwindcss-animate + tailwind v3.
 
 Major changes during the migration:
@@ -489,9 +488,6 @@ Major changes during the migration:
 - TypeScript → JavaScript with JSDoc types on critical interfaces.
 - Backend "controllers" with HTTP coupling → **use-cases** that take
   plain inputs/outputs and throw domain errors.
-
-See [`DRIFT_REPORT.md`](./DRIFT_REPORT.md) for what's still drifting
-between this codebase and the live `complisk.com` deployment.
 
 ---
 

@@ -1,6 +1,6 @@
 "use client";
 
-// Mirrors the production complisk.com /category/<slug> page:
+// Mirrors the production hoppingdeals.world /category/<slug> page:
 //   - Reads the slug, calls getPromotions({ category, state, city }) using the
 //     user's stored location, refetches on the global "locationChanged" event.
 //   - Renders a 2/3-column PromotionVisualCard grid, with loading skeletons,

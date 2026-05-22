@@ -3,7 +3,7 @@ import StructuredData from "@/presentation/components/shared/StructuredData";
 import { createAdminClient } from "@/utils/supabase/server";
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://complisk.com";
+  process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 // Render on demand. There are 143+ active promotions; pre-rendering every
 // one at build time is expensive and the data is live anyway.
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }) {
   if (!promotion) {
     return {
       title: "Promotion",
-      description: "Discover local business promotions on Complisk.",
+      description: "Discover local business promotions on Hopping Deals.",
       alternates: { canonical: `/promotion/${id}` },
     };
   }
@@ -45,21 +45,21 @@ export async function generateMetadata({ params }) {
   const businessName = promotion.Businesses?.name || meta.businessName || "Local Business";
   const description = (
     meta.promotionDescription ||
-    `Active deal from ${businessName} on Complisk.`
+    `Active deal from ${businessName} on Hopping Deals.`
   ).slice(0, 200);
   return {
     title: `${businessName} — Local Deal`,
     description,
     alternates: { canonical: `/promotion/${id}` },
     openGraph: {
-      title: `${businessName} on Complisk`,
+      title: `${businessName} on Hopping Deals`,
       description,
       type: "website",
       url: `/promotion/${id}`,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${businessName} on Complisk`,
+      title: `${businessName} on Hopping Deals`,
       description,
     },
   };
@@ -74,7 +74,7 @@ function buildOfferSchema(promotion) {
     promotion.Businesses?.businessAddress || meta.businessAddress;
   const description =
     meta.promotionDescription ||
-    `Active deal from ${businessName} on Complisk.`;
+    `Active deal from ${businessName} on Hopping Deals.`;
   const url = `${SITE_URL}/promotion/${promotion.id}`;
   return {
     "@context": "https://schema.org",

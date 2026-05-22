@@ -1,6 +1,6 @@
 "use client";
 
-// Public homepage. Mirrors the live complisk.com layout:
+// Public homepage. Mirrors the live hoppingdeals.world layout:
 //   Header → Hero → Categories (cityscape) → 4× CategoryCarousel → Footer.
 
 import Header from "@/presentation/components/homePage/Header";

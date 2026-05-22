@@ -1,7 +1,7 @@
 "use client";
 
 // BusinessHeader — used on /business/visitor (and similar marketing pages).
-// Mirrors the live complisk.com layout: a simple two-end header with the
+// Mirrors the live hoppingdeals.world layout: a simple two-end header with the
 // logo on the left and a Login or Business Dashboard button + hamburger
 // menu on the right. When logged in, the business name appears as a
 // subtle line under the logo (rather than competing for centre space).
@@ -108,8 +108,8 @@ export default function BusinessHeader() {
                   <MenuItem icon={<Info />} label="About Us" to="/about-us" />
                   <MenuItem
                     icon={<Building2 />}
-                    label="Complisk Business Directory"
-                    to="/complisk-business-directory"
+                    label="Hopping Deals Business Directory"
+                    to="/hopping-deals-business-directory"
                   />
 
                   {!isBusinessLoggedIn && (

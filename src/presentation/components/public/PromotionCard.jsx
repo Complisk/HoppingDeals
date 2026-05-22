@@ -1,7 +1,7 @@
 "use client";
 
 // Shared promotion card. Used by the homepage Featured grid and every
-// per-category row. Mirrors the live complisk.com layout: a fixed-aspect
+// per-category row. Mirrors the live hoppingdeals.world layout: a fixed-aspect
 // image on top, then 3 rows of metadata underneath (business name,
 // address, single-line description). The description is clamped to one
 // line so cards stay uniform height regardless of how long the metadata
