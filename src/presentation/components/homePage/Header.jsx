@@ -70,7 +70,7 @@ const CATEGORIES = [
   { label: "Travel & Activities", slug: "travel-activities" },
 ];
 
-export default function Header() {
+export default function Header({ overlay = false }) {
   const router = useRouter();
   const pathname = usePathname();
   const dispatch = useDispatch();
@@ -85,25 +85,36 @@ export default function Header() {
 
   return (
     <>
-      <header className="py-3 px-3 z-40 sm:px-8 border-b border-gray-100 fixed top-0 left-0 right-0 bg-white">
-        <div className="max-w-7xl mx-auto flex justify-between items-center gap-2">
-          <div className="shrink-0">
+      <header
+        className={`site-header${overlay ? " site-header--overlay" : ""}`}
+      >
+        <div className="site-header__inner">
+          <div className="site-header__brand">
             <span className="sm:hidden">
               <Logo size="md" />
             </span>
-            <span className="hidden sm:inline">
+            <span className="hidden sm:inline-flex">
               <Logo size="xl" />
             </span>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 shrink-0">
-            <Link href="/business/visitor" className="inline-flex">
-              <button
-                type="button"
-                className="inline-flex h-9 items-center justify-center whitespace-nowrap  rounded-sm border border-[#000000] bg-white px-5 text-sm font-semibold leading-none text-[#E31E24] transition hover:bg-red-50 sm:h-10 sm:px-6 sm:text-base"
-              >
-                Business Portal
-              </button>
+          <div className="site-header__location">
+            <HeaderLocationSearch />
+          </div>
+
+          <div className="site-header__actions">
+            {user?.fullName || business?.name ? (
+              <span className="site-header__welcome">
+                Welcome, {user?.fullName || business?.name}
+              </span>
+            ) : (
+              <Link href="/auth/login" className="site-header__login">
+                Login
+              </Link>
+            )}
+
+            <Link href="/business/visitor" className="site-header__portal">
+              Business Portal
             </Link>
 
             <DropdownMenu.Root>
@@ -111,9 +122,10 @@ export default function Header() {
                 <button
                   type="button"
                   aria-label="Open menu"
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-md text-gray-500 transition hover:bg-gray-100 sm:h-10 sm:w-10"
+                  className="site-header__menu"
                 >
-                  <Menu className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
+                  <Menu aria-hidden="true" strokeWidth={2.4} />
+                  <span>Menu</span>
                 </button>
               </DropdownMenu.Trigger>
 
@@ -123,7 +135,7 @@ export default function Header() {
                     initial={{ opacity: 0, y: -8, scale: 0.96 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ duration: 0.2 }}
-                    className="w-64 rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl border border-gray-200 z-50 p-2"
+                    className="z-50 w-64 rounded-lg border border-gray-200 bg-white/95 p-2 shadow-xl backdrop-blur-xl"
                   >
                     {PUBLIC_ITEMS_BEFORE_CATEGORIES.map((item) => (
                       <MenuItem
@@ -159,7 +171,7 @@ export default function Header() {
                         <DropdownMenu.SubContent
                           sideOffset={8}
                           alignOffset={-4}
-                          className="w-64 max-h-[60vh] overflow-y-auto rounded-2xl bg-white/95 backdrop-blur-xl shadow-xl border border-gray-200 z-50 p-2"
+                          className="z-50 max-h-[60vh] w-64 overflow-y-auto rounded-lg border border-gray-200 bg-white/95 p-2 shadow-xl backdrop-blur-xl"
                         >
                           {CATEGORIES.map((cat) => {
                             const href = `/category/${cat.slug}`;
@@ -256,28 +268,8 @@ export default function Header() {
             </DropdownMenu.Root>
           </div>
         </div>
-
-        <div className="max-w-7xl mx-auto mt-3 flex justify-between items-center text-sm gap-4">
-          <HeaderLocationSearch />
-
-          <div className="flex items-center gap-4">
-            {user?.fullName || business?.name ? (
-              <span className="hidden sm:inline text-gray-700 font-medium whitespace-nowrap">
-                Welcome • {user?.fullName || business?.name}
-              </span>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="text-gray-700 hover:text-[#E31E24] transition font-medium"
-              >
-                Login
-              </Link>
-            )}
-          </div>
-        </div>
       </header>
-      {/* Spacer matching the fixed header height */}
-      <div className="h-28" aria-hidden="true" />
+      <div className="site-header__spacer" aria-hidden="true" />
     </>
   );
 }
@@ -290,7 +282,7 @@ function MenuItem({ href, Icon, label, active = false }) {
       <Link
         href={href}
         className={cn(
-          "flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-sm font-medium transition outline-none",
+          "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition outline-none",
           active
             ? "bg-red-50 text-[#E31E24]"
             : "text-gray-700 hover:bg-red-50 hover:text-[#E31E24]",

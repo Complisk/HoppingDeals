@@ -5,9 +5,9 @@ const SITE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 export const metadata = {
-  title: "Hopping Deals | Local business promotions and deals",
+  title: "Hopping Deals | Coupons from local businesses near you",
   description:
-    "Find local business promotions, flash deals, and limited-time offers near you. Browse restaurants, beauty, services, and more on Hopping Deals.",
+    "Find local coupons, business promotions, flash deals, and limited-time offers near you. Browse restaurants, beauty, soap, services, shopping, and more on Hopping Deals.",
   alternates: { canonical: "/" },
 };
 
@@ -16,7 +16,7 @@ const organization = {
   "@type": "Organization",
   name: "Hopping Deals",
   url: SITE_URL,
-  logo: `${SITE_URL}/logo-512.png`,
+  logo: `${SITE_URL}/logo.png`,
   sameAs: ["https://www.instagram.com/hopping_deals"],
   description:
     "Hopping Deals surfaces local-business promotions, flash deals, and limited-time offers from nearby merchants.",

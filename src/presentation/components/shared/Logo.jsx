@@ -4,10 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 
 const sizeMap = {
-  sm: { className: "h-6 w-auto", width: 122, height: 60 },
-  md: { className: "h-8 w-auto", width: 162, height: 80 },
-  lg: { className: "h-10 w-auto", width: 203, height: 100 },
-  xl: { className: "h-12 w-auto", width: 244, height: 120 },
+  sm: { className: "h-10 w-10", width: 80, height: 80 },
+  md: { className: "h-13 w-13", width: 104, height: 104 },
+  lg: { className: "h-16 w-16", width: 128, height: 128 },
+  xl: { className: "h-19 w-19", width: 152, height: 152 },
 };
 
 const Logo = ({ size = "md", className = "" }) => {
@@ -15,16 +15,16 @@ const Logo = ({ size = "md", className = "" }) => {
   return (
     <Link
       href="/"
-      className="inline-flex items-center"
+      className="inline-flex shrink-0 items-center"
       aria-label="Hopping Deals home"
     >
       <Image
-        src="/hopping-deals-logo.jpg"
+        src="/logo.png"
         alt="Hopping Deals"
         width={width}
         height={height}
         priority
-        className={`${sizeClass} ${className}`.trim()}
+        className={`${sizeClass} object-contain ${className}`.trim()}
       />
     </Link>
   );

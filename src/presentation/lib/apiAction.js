@@ -11,7 +11,13 @@ import { toast } from "react-toastify";
 
 const baseUrl = "/api";
 
-const fetchData = async (url, options = {}, callBack, _notProtected) => {
+const fetchData = async (
+  url,
+  options = {},
+  callBack,
+  _notProtected,
+  suppressErrorToast = false,
+) => {
   let response = null;
   let error = null;
 
@@ -45,15 +51,14 @@ const fetchData = async (url, options = {}, callBack, _notProtected) => {
 
     if (status === 403) {
       const message =
-        responseMessage ||
-        "You don't have permission to perform this action";
-      toast.error(message);
+        responseMessage || "You don't have permission to perform this action";
+      if (!suppressErrorToast) toast.error(message);
       return { response, error };
     }
 
-    if (responseMessage) {
+    if (responseMessage && !suppressErrorToast) {
       toast.error(responseMessage);
-    } else if (err.message) {
+    } else if (err.message && !suppressErrorToast) {
       toast.error(err.message);
     }
   }

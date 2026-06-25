@@ -140,6 +140,7 @@ const CategoryCarousel = memo(function CategoryCarousel({
           { method: "GET" },
           () => {},
           "business",
+          true,
         );
 
         if (fetchError) {

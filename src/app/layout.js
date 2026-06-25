@@ -14,7 +14,8 @@ const outfit = Outfit({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "https://hoppingdeals.world";
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
@@ -44,17 +45,17 @@ export const metadata = {
   // [id]) override this default.
   openGraph: {
     type: "website",
-    title: "Hopping Deals | Local business promotions and deals",
+    title: "Hopping Deals | Coupons from local businesses near you",
     description:
-      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
+      "Find local coupons, flash deals, and limited-time offers from nearby restaurants, beauty shops, service providers, stores, and more.",
     url: "/",
     siteName: "Hopping Deals",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Hopping Deals | Local business promotions and deals",
+    title: "Hopping Deals | Coupons from local businesses near you",
     description:
-      "Find local promotions, flash deals, and limited-time offers from nearby businesses with Hopping Deals.",
+      "Find local coupons, flash deals, and limited-time offers from nearby restaurants, beauty shops, service providers, stores, and more.",
   },
   icons: {
     // Multiple sizes so the browser picks the sharpest one for the tab,

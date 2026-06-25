@@ -6,7 +6,7 @@
 import Header from "@/presentation/components/homePage/Header";
 import Footer from "@/presentation/components/homePage/Footer";
 import Hero from "@/presentation/components/homePage/Hero";
-import Categories from "@/presentation/components/homePage/Categories";
+import CouponCategories from "@/presentation/components/homePage/CouponCategories";
 import CategoryCarousel from "@/presentation/components/public/CategoryCarousel";
 import { useUserLocation } from "@/presentation/lib/useUserLocation";
 
@@ -17,13 +17,10 @@ export default function Index() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header overlay />
       <main className="flex-grow">
-        <div className="py-6 px-4 sm:px-8">
-          <Hero />
-        </div>
-
-        <Categories />
+        <Hero />
+        <CouponCategories />
         <CategoryCarousel
           title="Featured Promotion"
           excludeCategories={[
