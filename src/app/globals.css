@@ -462,7 +462,6 @@
   justify-content: space-around;
 }
 
-
 /* Hopping Deals home hero copied from the dedicated hero UI project. */
 .hd-hero {
   min-height: max(38rem, 100svh);
@@ -699,12 +698,12 @@
   font-weight: 900;
   line-height: 0.95;
   text-align: center;
-  text-shadow: 0 3px 0 #081033;
+  /* text-shadow: 0 3px 0 #081033; */
 }
 
 .hd-ticket__copy span {
   font-size: clamp(0.95rem, 2.2vw, 1.45rem);
-  -webkit-text-stroke: 1.6px #081033;
+  -webkit-text-stroke: 0.5px #081033;
 }
 
 .hd-ticket__copy span:first-child {
