@@ -703,7 +703,7 @@
 
 .hd-ticket__copy span {
   font-size: clamp(0.95rem, 2.2vw, 1.45rem);
-  -webkit-text-stroke: 0.5px #081033;
+  /* -webkit-text-stroke: 0px #081033; */
 }
 
 .hd-ticket__copy span:first-child {

@@ -20,7 +20,7 @@ export default function Index() {
       <Header overlay />
       <main className="flex-grow">
         <Hero />
-        <CouponCategories />
+        {/* <CouponCategories /> */}
         <CategoryCarousel
           title="Featured Promotion"
           excludeCategories={[
