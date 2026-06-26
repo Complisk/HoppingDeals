@@ -90,7 +90,9 @@ export default function Header({ overlay = false }) {
         className={[
           // Non-home pages: fixed header
           // Homepage overlay: absolute header (so it doesn't keep hiding on scroll)
-          overlay ? "absolute z-40 inset-x-0 top-0" : "fixed z-40 inset-x-0 top-0",
+          overlay
+            ? "absolute z-40 inset-x-0 top-0"
+            : "fixed z-40 inset-x-0 top-0",
           "text-white",
           // When overlay=true (homepage hero), make header transparent so the hero image shows through.
           overlay
@@ -103,7 +105,7 @@ export default function Header({ overlay = false }) {
             w-[min(80rem,100%)] mx-auto
             px-[clamp(0.75rem,3vw,2rem)]
             sm:py-7
- py-            grid grid-cols-[auto_1fr]
+ py-3            grid grid-cols-[auto_1fr]
             grid-rows-[3.45rem_2.35rem]
             items-center
             gap-[clamp(0.8rem,2vw,1.75rem)]
@@ -111,7 +113,7 @@ export default function Header({ overlay = false }) {
         >
           <div className="col-start-1 row-start-1">
             <span className="sm:hidden">
-              <Logo size="md" />
+              <Logo size="lg" />
             </span>
             <span className="hidden sm:inline-flex">
               <Logo size="xl" />
