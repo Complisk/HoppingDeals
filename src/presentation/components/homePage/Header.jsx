@@ -41,6 +41,7 @@ const PUBLIC_ITEMS_BEFORE_CATEGORIES = [
   { label: "Blog", href: "/blog", Icon: BookOpen },
   { label: "Photo Gallery", href: "/photos", Icon: ImageIcon },
 ];
+
 const PUBLIC_ITEMS_AFTER_CATEGORIES = [
   {
     label: "Hopping Deals Business Directory",
@@ -86,10 +87,27 @@ export default function Header({ overlay = false }) {
   return (
     <>
       <header
-        className={`site-header${overlay ? " site-header--overlay" : ""}`}
+        className={[
+          "fixed z-40 inset-x-0 top-0",
+          "border-b border-[rgb(245_197_92/0.48)]",
+          "bg-[rgb(3_8_25/0.97)]",
+          "shadow-[0_12px_32px_rgb(0_0_0/0.28)]",
+          "text-white",
+          overlay ? "border-b-transparent bg-transparent shadow-none" : "",
+        ].join(" ")}
       >
-        <div className="site-header__inner">
-          <div className="site-header__brand">
+        <div
+          className="
+            w-[min(80rem,100%)] mx-auto
+            px-[clamp(0.75rem,3vw,2rem)]
+            sm:py-7
+ py-            grid grid-cols-[auto_1fr]
+            grid-rows-[3.45rem_2.35rem]
+            items-center
+            gap-[clamp(0.8rem,2vw,1.75rem)]
+          "
+        >
+          <div className="col-start-1 row-start-1">
             <span className="sm:hidden">
               <Logo size="md" />
             </span>
@@ -98,11 +116,15 @@ export default function Header({ overlay = false }) {
             </span>
           </div>
 
-          <div className="site-header__location">
+          <div
+            className="
+              col-start-1 col-end-[-1]
+              row-start-2
+               flex justify-between items-center
+              min-w-0
+            "
+          >
             <HeaderLocationSearch />
-          </div>
-
-          <div className="site-header__actions">
             {user?.fullName || business?.name ? (
               <span className="site-header__welcome">
                 Welcome, {user?.fullName || business?.name}
@@ -112,8 +134,23 @@ export default function Header({ overlay = false }) {
                 Login
               </Link>
             )}
+          </div>
 
-            <Link href="/business/visitor" className="site-header__portal">
+          <div className="col-start-2 row-start-1 flex items-center justify-end gap-[clamp(0.55rem,1.5vw,1rem)]">
+            <Link
+              href="/business/visitor"
+              className="
+                min-h-[2.55rem] inline-flex items-center justify-center
+                px-[0.95rem] py-[0.6rem]
+                border border-white
+                rounded-[6px]
+                bg-[#d9232e] text-white
+                text-[0.88rem] font-black leading-[1]
+                whitespace-nowrap
+                transition-transform transition-colors duration-180
+                hover:bg-[#b91621] hover:translate-y-[-1px]
+              "
+            >
               Business Portal
             </Link>
 
@@ -122,10 +159,30 @@ export default function Header({ overlay = false }) {
                 <button
                   type="button"
                   aria-label="Open menu"
-                  className="site-header__menu"
+                  className="
+                    w-[3.25rem] min-h-[3.35rem]
+                    grid place-items-center content-center
+                    gap-[0.05rem]
+                    border-0 bg-transparent
+                    cursor-pointer text-white
+                    filter drop-shadow-[0_2px_3px_rgb(0_0_0/0.6)]
+                    hover:text-[#f5c55c]
+                    transition-colors
+                  "
                 >
-                  <Menu aria-hidden="true" strokeWidth={2.4} />
-                  <span>Menu</span>
+                  <Menu
+                    aria-hidden="true"
+                    strokeWidth={2.4}
+                    className="h-[1.65rem] w-[1.65rem]"
+                  />
+                  <span
+                    className="
+                      font-[Georgia,'Times New Roman',Times,serif]
+                      text-[0.73rem] italic font-bold leading-[1]
+                    "
+                  >
+                    Menu
+                  </span>
                 </button>
               </DropdownMenu.Trigger>
 
@@ -235,6 +292,7 @@ export default function Header({ overlay = false }) {
                         <div className="px-4 py-2 text-gray-500 text-xs uppercase tracking-wide">
                           {user?.fullName || business?.name}
                         </div>
+
                         {business && (
                           <MenuItem
                             href="/business/dashboard"
@@ -243,6 +301,7 @@ export default function Header({ overlay = false }) {
                             active={pathname?.startsWith("/business/dashboard")}
                           />
                         )}
+
                         {user && (
                           <MenuItem
                             href="/profile"
@@ -251,6 +310,7 @@ export default function Header({ overlay = false }) {
                             active={pathname === "/profile"}
                           />
                         )}
+
                         <DropdownMenu.Item
                           onSelect={handleLogout}
                           className="flex items-center gap-3 px-4 py-3 rounded-xl cursor-pointer text-gray-700 text-sm font-medium hover:bg-red-50 hover:text-[#E31E24] focus:outline-none transition"
@@ -269,7 +329,8 @@ export default function Header({ overlay = false }) {
           </div>
         </div>
       </header>
-      <div className="site-header__spacer" aria-hidden="true" />
+
+      <div className={overlay ? "h-0" : "h-[6.65rem]"} aria-hidden="true" />
     </>
   );
 }

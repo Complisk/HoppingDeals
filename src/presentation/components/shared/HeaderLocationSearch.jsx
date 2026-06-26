@@ -153,13 +153,13 @@ const HeaderLocationSearch = ({ className = "" }) => {
         className="flex items-center gap-2 text-sm text-gray-700 hover:text-red-500 transition-colors"
       >
         <MapPin className="h-5 w-5 text-red-500 shrink-0" />
-        <span className="font-medium truncate max-w-50">
+        <span className="font-medium text-white truncate max-w-50">
           {currentLocation}
         </span>
       </button>
 
       {isSearchOpen && (
-        <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-gray-200 z-50 p-3">
+        <div className="absolute top-full left-0 mt-2 w-80 bg-white text-black rounded-lg shadow-xl border border-gray-200 z-50 p-3">
           <div className="mb-2">
             <p className="text-xs text-gray-500 mb-2">
               Search for a city or state
