@@ -88,12 +88,14 @@ export default function Header({ overlay = false }) {
     <>
       <header
         className={[
-          "fixed z-40 inset-x-0 top-0",
-          "border-b border-[rgb(245_197_92/0.48)]",
-          "bg-[rgb(3_8_25/0.97)]",
-          "shadow-[0_12px_32px_rgb(0_0_0/0.28)]",
+          // Non-home pages: fixed header
+          // Homepage overlay: absolute header (so it doesn't keep hiding on scroll)
+          overlay ? "absolute z-40 inset-x-0 top-0" : "fixed z-40 inset-x-0 top-0",
           "text-white",
-          overlay ? "border-b-transparent bg-transparent shadow-none" : "",
+          // When overlay=true (homepage hero), make header transparent so the hero image shows through.
+          overlay
+            ? "border-b border-transparent bg-transparent shadow-none"
+            : "border-b border-[rgb(245_197_92/0.48)] bg-[rgb(3_8_25/0.97)] shadow-[0_12px_32px_rgb(0_0_0/0.28)]",
         ].join(" ")}
       >
         <div
